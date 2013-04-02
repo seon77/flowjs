@@ -23,22 +23,38 @@ define(function(require,exports,module){
                 if(!this._going){
                     var item = this._queue.dequeue();
                     if(item){
-                        _this._entry(item.step,item.data || this._curr.__result);
+                        _this._enter(item.step,this._curr.__result);
                     }
                 }
             },
-            _entry:function(step,data){
+            _enter:function(step,data){
                 var _this = this;
                 this._going = true;
-                if(step instanceof Step){
-                    this._curr = step;
-                    step.entry(data,function(err,result){
+                this._curr = step;
+                if(step instanceof ConditionStep){
+                    step.enter(data,function(err,result){
+                        _this._going = false;
+                        step.__result = result.data;
+                        var condition = result.condition;
+                        var next = step.select(condition);
+                        if(next){
+                            _this._enter(next,step.__result);
+                        }
+                    });
+                }
+                else if(step instanceof Step){
+                    step.enter(data,function(err,result){
                         _this._going = false;
                         step.__result = result;
-                        item = _this._queue.dequeue();
-                        if(item){
-                            result = item.data || result
-                            _this._entry(step,result);
+                        var next = step.next();
+                        if(next){
+                            _this._enter(next,result);
+                        }
+                        else{
+                            item = _this._queue.dequeue();
+                            if(item){
+                                _this._enter(item.step,result);
+                            }   
                         }
                     });
                 }

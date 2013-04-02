@@ -7,7 +7,7 @@ define(function(require,exports,module){
             this.callsuper(options);
         },
         methods:{
-            entry:function(data,options){
+            enter:function(data,options){
                 var btn = Q.$('input');
                 var _this = this;
                 btn.on('click',function(){

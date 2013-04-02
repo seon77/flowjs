@@ -5,6 +5,13 @@ define(function(require,exports,module){
         extend:Step,
         construct:function(options){
             this.callsuper(options);
+            this._cases = options.cases;
+            this._default = options.defaultCase;
+        },
+        methods:{
+            select:function(condition){
+                return this._cases[condition] || this._default;
+            }
         }
     });
     

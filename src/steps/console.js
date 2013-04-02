@@ -7,13 +7,14 @@ define(function(require,exports,module){
             this.callsuper(options);
         },
         methods:{
-            entry:function(data,callback){
-                setTimeout(function(){
-                    console.log(data);
-                    callback(null,++data);
-                },1000);
-                // console.log(data);
-                // callback(null,++data);
+            enter:function(data,callback){
+                var _this = this;
+                // setTimeout(function(){
+                //     console.log(_this._description);
+                //     callback();
+                // },1000);
+                console.log(this._description);
+                callback();
             }
         }
     });

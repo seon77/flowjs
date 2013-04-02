@@ -14,7 +14,12 @@ define(function(require,exports,module){
         methods:{
             enter:Class.abstractMethod,
             next:function(step){
-                this._next = step;
+                if(step){
+                    this._next = step;
+                }
+                else{
+                    return this._next;
+                }
             }
         }
     });
