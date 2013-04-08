@@ -3,11 +3,36 @@ flowjs
 
 一个开放的，面向业务流程的，可灵活扩展和定制的前端业务开发框架。
 
-基本规则
+流程定义
 -------
 
-1.无下划线前缀为public方法。
+    var step1 = new Step({description:'step1'});
+    var step2 = new Step({description:'step2'});
+    var step3 = new Step({description:'step3'});
+    var step4 = new Step({description:'step4'});
+    var step5 = new ConditionStep({description:'step5',cases:{
+        '1':function(){
+            _this.go(step1);
+        },
+        '2':function(){
+            _this.go(step6);
+        }
+    },defaultCase:function(){
+        _this.go(step3);
+    }});
+    var step6 = new Step({description:'step6'});
+    this.go(step1);
+    this.go(step2);
+    this.go(step3);
+    this.go(step4);
+    this.go(step5);
 
-2.一个下划线前缀为protected方法
+以上流程首先会顺序执行1 -> 2 -> 3 -> 4 -> 5
 
-3.双下划线前缀为private方法
+step5是一个条件判断的步骤，这里会进行判断
+
+如果结果为1，则继续 1 -> 2 -> 3 -> 4 -> 5
+
+如果结果为2，则执行 6
+
+其余情况，则继续 3 -> 4 -> 5
