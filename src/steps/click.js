@@ -7,16 +7,16 @@ define(function(require,exports,module){
             this.callsuper(options);
         },
         methods:{
-            enter:function(data,options){
-                var btn = Q.$('input');
+            enter:function(data,callback){
                 var _this = this;
-                btn.on('click',function(){
-                    _this.fire({type:'input',data:{input:'click'}});
+                this._wait(function(){
+                    var btn = Q.$('input');
+                    btn.on('click',function(){
+                        var fn = _this._inputs['click'];
+                        fn.call(_this);
+                    });
                 });
-                this.fire({type:'exit'});
-            },
-            getNext:function(input){
-                return this._nexts[input];
+                callback();
             }
         }
     });

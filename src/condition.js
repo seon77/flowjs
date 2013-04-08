@@ -9,7 +9,7 @@ define(function(require,exports,module){
             this._default = options.defaultCase;
         },
         methods:{
-            select:function(condition){
+            _select:function(condition){
                 var fn = this._cases[condition] || this._default;
                 fn();
             },

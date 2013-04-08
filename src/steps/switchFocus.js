@@ -13,7 +13,9 @@ define(function(require,exports,module){
                 var frames = data.frames;
                 frames.css('zIndex','');
                 Q.$(frames[curr]).css('zIndex',1);
-                callback();
+                setTimeout(function(){
+                    callback();
+                },2000);
             }
         }
     });

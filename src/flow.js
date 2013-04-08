@@ -12,6 +12,7 @@ define(function(require,exports,module){
             this._queue = new Queue();
             this._started = false;
             this._timer = null;
+            this._prev = this._begin;
         },
         methods:{
             //初始化流程
@@ -19,6 +20,10 @@ define(function(require,exports,module){
             go:function(step,data){
                 var _this = this;
                 this._queue.enqueue({step:step,data:data});
+                if(this._prev){
+                    this._prev.next(step);
+                }
+                this._prev = step;
                 if(this._timer){
                     clearTimeout(this._timer);
                 }
@@ -55,7 +60,6 @@ define(function(require,exports,module){
             },
             _enter:function(step,data,callback){
                 var _this = this;
-                this._curr.next(step);
                 this._curr = step;
                 step.enter(data,function(err,result){
                     step.__result = result;
