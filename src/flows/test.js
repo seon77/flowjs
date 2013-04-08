@@ -4,7 +4,6 @@ define(function(require,exports,module){
     var ConsoleStep = require('../steps/console');
     var ConditionStep = require('../steps/condition');
     var InputStep = require('../steps/click');
-    var TimerStep = require('../steps/focusTimer');
     var ConsoleFlow = Class({
         extend:Flow,
         construct:function(options){
