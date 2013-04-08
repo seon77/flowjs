@@ -5,13 +5,16 @@ define(function(require,exports,module){
         extend:Step,
         construct:function(options){
             this.callsuper(options);
-            this._cases = options.cases || {};
-            this._default = options.defaultCase;
+            this._interval = options.interval;
+            this._callback = options.callback;
         },
         methods:{
-            select:function(condition){
-                var fn = this._cases[condition] || this._default;
-                fn();
+            enter:function(data,callback){
+                var _this = this;
+                setTimeout(function(){
+                    _this._callback();
+                    callback(null,data);
+                },this._interval);
             }
         }
     });

@@ -18,27 +18,28 @@ define(function(require,exports,module){
             start:Class.abstractMethod,
             go:function(step,data){
                 var _this = this;
-                this._curr.next(step);
                 this._queue.enqueue({step:step,data:data});
                 if(!this._going){
                     var item = this._queue.dequeue();
                     if(item){
-                        _this._enter(item.step,this._curr.__result);
+                        _this._process(item.step,this._curr.__result);
                     }
                 }
             },
-            _enter:function(step,data){
+            _process:function(step,data){
                 var _this = this;
                 this._going = true;
+                this._curr.next(step);
                 this._curr = step;
                 if(step instanceof ConditionStep){
                     step.enter(data,function(err,result){
                         _this._going = false;
+                        result = result || {};
                         step.__result = result.data;
                         var condition = result.condition;
                         var next = step.select(condition);
                         if(next){
-                            _this._enter(next,step.__result);
+                            _this._process(next,step.__result);
                         }
                     });
                 }
@@ -48,12 +49,12 @@ define(function(require,exports,module){
                         step.__result = result;
                         var next = step.next();
                         if(next){
-                            _this._enter(next,result);
+                            _this._process(next,result);
                         }
                         else{
                             item = _this._queue.dequeue();
                             if(item){
-                                _this._enter(item.step,result);
+                                _this._process(item.step,result);
                             }   
                         }
                     });
