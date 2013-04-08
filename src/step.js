@@ -5,21 +5,34 @@ define(function(require,exports,module){
         plugins:[new EventPlugin()],
         construct:function(options){
             options = options || {};
-            this._description = options.description;
-            this._next = null;
-            if(!this._description){
+            if(!options.description){
                 throw new Error('Need a description.');
             }
+            this._data = {};
+            this._data.description = options.description;
+            this._next = null;
+            this._end = false;
         },
         methods:{
             enter:Class.abstractMethod,
             next:function(step){
                 if(step){
-                    this._next = step;
+                    if(!this.isEnd()){
+                        this._next = step;
+                    }
                 }
                 else{
                     return this._next;
                 }
+            },
+            end:function(){
+                this._end = true;
+            },
+            isEnd:function(){
+                return this._end;
+            },
+            data:function(){
+                return this._data;
             }
         }
     });

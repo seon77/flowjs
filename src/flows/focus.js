@@ -19,8 +19,8 @@ define(function(require,exports,module){
                 var step1 = new FocusData({description:'get data'});
                 var step2 = new FocusTemplate({description:'get tpl'});
                 var step3 = new FocusGenerator({description:'generate'});
-                var step6 = new FocusTimer({description:'timer',interval:2000,callback:function(){
-                    _this.go(step5);
+                var step6 = new FocusTimer({description:'timer',interval:2000,callback:function(data){
+                    _this.go(step5,data);
                     _this.go(step4);
                 }});
                 var step5 = new SwitchFocus({description:'switch'});

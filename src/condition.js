@@ -12,6 +12,12 @@ define(function(require,exports,module){
             select:function(condition){
                 var fn = this._cases[condition] || this._default;
                 fn();
+            },
+            cases:function(){
+                return {
+                    default:this._default,
+                    cases:this._cases
+                }
             }
         }
     });

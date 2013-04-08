@@ -12,9 +12,12 @@ define(function(require,exports,module){
             enter:function(data,callback){
                 var _this = this;
                 setTimeout(function(){
-                    _this._callback();
+                    _this._callback(data);
                     callback(null,data);
                 },this._interval);
+            },
+            callback:function(){
+                return this._callback;
             }
         }
     });

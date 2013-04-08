@@ -3,7 +3,6 @@ define(function(require,exports,module){
     var EventPlugin = require('./util/eventPlugin');
     var Begin = require('./begin');
     var Step = require('./step');
-    var ConditionStep = require('./condition');
     var Queue = require('./util/queue');
     var Flow = Class({
         plugins:[new EventPlugin()],
@@ -11,7 +10,8 @@ define(function(require,exports,module){
             this._begin = new Begin({description:'Begin'});
             this._curr = this._begin;
             this._queue = new Queue();
-            this._going = false;
+            this._started = false;
+            this._timer = null;
         },
         methods:{
             //初始化流程
@@ -19,46 +19,48 @@ define(function(require,exports,module){
             go:function(step,data){
                 var _this = this;
                 this._queue.enqueue({step:step,data:data});
-                if(!this._going){
-                    var item = this._queue.dequeue();
-                    if(item){
-                        _this._process(item.step,this._curr.__result);
-                    }
+                if(this._timer){
+                    clearTimeout(this._timer);
+                }
+                this._timer = setTimeout(function(){
+                    step.end();
+                    _this._start();
+                },0);
+            },
+            _start:function(){
+                var item = this._queue.dequeue();
+                if(item){
+                    this._process(item.step,item.data);
                 }
             },
             _process:function(step,data){
+                this._enter(step,data,function(result){
+                    var next = this._getNext(step);
+                    if(next){
+                        this._process(next,result);
+                    }
+                });
+            },
+            _getNext:function(step){
+                var result = step.__result,next = null;
+                var item = this._queue.dequeue();
+                var next = null;
+                if(item){
+                    next = item.step;
+                }
+                else{
+                    next = step.next();
+                }
+                return next;
+            },
+            _enter:function(step,data,callback){
                 var _this = this;
-                this._going = true;
                 this._curr.next(step);
                 this._curr = step;
-                if(step instanceof ConditionStep){
-                    step.enter(data,function(err,result){
-                        _this._going = false;
-                        result = result || {};
-                        step.__result = result.data;
-                        var condition = result.condition;
-                        var next = step.select(condition);
-                        if(next){
-                            _this._process(next,step.__result);
-                        }
-                    });
-                }
-                else if(step instanceof Step){
-                    step.enter(data,function(err,result){
-                        _this._going = false;
-                        step.__result = result;
-                        var next = step.next();
-                        if(next){
-                            _this._process(next,result);
-                        }
-                        else{
-                            item = _this._queue.dequeue();
-                            if(item){
-                                _this._process(item.step,result);
-                            }   
-                        }
-                    });
-                }
+                step.enter(data,function(err,result){
+                    step.__result = result;
+                    callback.call(_this,result);
+                });
             }
         }
     });

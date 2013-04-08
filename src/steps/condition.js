@@ -9,7 +9,8 @@ define(function(require,exports,module){
         methods:{
             enter:function(data,callback){
                 var result = Math.ceil(3 * Math.random());
-                callback(null,{condition:result});
+                this.select(result);
+                callback();
             }
         }
     });

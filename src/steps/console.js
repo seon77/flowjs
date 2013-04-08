@@ -10,7 +10,7 @@ define(function(require,exports,module){
             enter:function(data,callback){
                 var _this = this;
                 setTimeout(function(){
-                    console.log(_this._description);
+                    console.log(_this.data().description);
                     callback();
                 },1000);
                 // console.log(this._description);
