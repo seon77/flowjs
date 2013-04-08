@@ -7,5 +7,7 @@ flowjs
 -------
 
 1.无下划线前缀为public方法。
+
 2.一个下划线前缀为protected方法
+
 3.双下划线前缀为private方法
