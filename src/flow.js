@@ -7,7 +7,7 @@ define(function(require,exports,module){
     var Flow = Class({
         plugins:[new EventPlugin()],
         construct:function(options){
-            this._begin = new Begin({description:'Begin'});
+            this._begin = new Begin({description:'Begin',struct:{}});
             this._curr = this._begin;
             this._queue = new Queue();
             this._started = false;

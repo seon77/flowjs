@@ -8,14 +8,16 @@ define(function(require,exports,module){
             this.callsuper(options);
         },
         methods:{
-            enter:function(data,callback){
+            _process:function(data,callback){
                 var curr = data.curr;
                 var frames = data.frames;
                 frames.css('zIndex','');
+                frames.css('opacity',0);
+                frames.hide();
+                Q.$(frames[curr]).show();
                 Q.$(frames[curr]).css('zIndex',1);
-                setTimeout(function(){
-                    callback();
-                },2000);
+                Q.$(frames[curr]).css('opacity',1);
+                callback(null,{frames:frames,smalls:data.smalls,curr:curr});
             }
         }
     });

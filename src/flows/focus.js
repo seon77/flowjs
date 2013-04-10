@@ -6,6 +6,9 @@ define(function(require,exports,module){
     var FocusGenerator = require('../steps/focusGenerator');
     var StartFocus = require('../steps/startFocus');
     var SwitchFocus = require('../steps/switchFocus');
+    var GetDoms = require('../steps/getDoms');
+    var HighlightSmall = require('../steps/highlightSmall');
+    var Delay = require('../steps/delay');
     var ConsoleFlow = Class({
         extend:Flow,
         construct:function(options){
@@ -16,16 +19,73 @@ define(function(require,exports,module){
             start:function(){
                 var _this = this;
                 var step1 = new FocusData({description:'get data'});
-                var step2 = new FocusTemplate({description:'get tpl'});
-                var step3 = new FocusGenerator({description:'generate'});
-                var step4 = new StartFocus({description:'start'});
-                var step5 = new SwitchFocus({description:'switch'});
+                var step2 = new FocusTemplate({description:'get template',struct:{
+                    data:{
+                        type:'object',
+                        empty:true
+                    }
+                }});
+                var step3 = new FocusGenerator({description:'generate',struct:{
+                    template:{
+                        type:'string',
+                        empty:true
+                    },
+                    data:{
+                        type:'object',
+                        empty:true
+                    }
+                }});
+                var step4 = new GetDoms({description:'get doms'});
+                var step5 = new StartFocus({description:'start',struct:{
+                    frames:{
+                        type:'object'
+                    },
+                    smalls:{
+                        type:'object'
+                    }
+                }});
+                var step6 = new SwitchFocus({description:'switch',struct:{
+                    curr:{
+                        type:'number'
+                    },
+                    frames:{
+                        type:'object'
+                    },
+                    smalls:{
+                        type:'object'
+                    }
+                }});
+                var step7 = new HighlightSmall({description:'highlight',struct:{
+                    curr:{
+                        type:'number'
+                    },
+                    frames:{
+                        type:'object'
+                    },
+                    smalls:{
+                        type:'object'
+                    }
+                }});
+                var step8 = new Delay({description:'delay',struct:{
+                    delay:{
+                        type:'number'
+                    },
+                    frames:{
+                        type:'object'
+                    },
+                    smalls:{
+                        type:'object'
+                    }
+                }});
                 this.go(step1);
                 this.go(step2);
                 this.go(step3);
                 this.go(step4);
                 this.go(step5);
-                this.go(step4);
+                this.go(step6);
+                this.go(step7);
+                this.go(step8);
+                this.go(step5);
             }
         }
     });

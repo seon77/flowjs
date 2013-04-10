@@ -7,8 +7,8 @@ define(function(require,exports,module){
             this.callsuper(options);
         },
         methods:{
-            enter:function(data,callback){
-                callback();
+            _process:function(data,callback){
+                callback(null,{data:{}});
             }
         }
     });

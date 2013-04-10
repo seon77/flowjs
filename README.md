@@ -11,7 +11,7 @@ flowjs
 框架由Flow（流程）和Step（步骤）两个类组成。Flow负责定义一个业务逻辑的流程，Step负责定义流程中的一个步骤。
 这与一个流程图很类似，未来我们会提供工具来实现流程图与代码的互相转换。这样就可以实现可视化的流程制定。
 
-Step类需要明确的定义本步骤所需要的输入与输出。
+Step类需要明确的定义本步骤所需要的参数。
 
 基于同一个Flow，可以通过实现不同的Step类的子类来实现扩展与定制。
 
@@ -53,3 +53,14 @@ step5是一个条件判断的步骤，这里会进行判断
 
 Step定义
 -------
+
+    var step5 = new SwitchFocus({description:'switch',struct:{
+        curr:{
+            type:'number'
+        },
+        frames:{
+            type:'object'
+        }
+    }});
+
+以上定义了一个步骤，要求输入的数据对象结构为：{curr:1,frames:{}}

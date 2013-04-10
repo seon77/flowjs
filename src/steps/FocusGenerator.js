@@ -7,7 +7,7 @@ define(function(require,exports,module){
             this.callsuper(options);
         },
         methods:{
-            enter:function(data,callback){
+            _process:function(data,callback){
                 callback();
             }
         }

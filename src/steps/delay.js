@@ -9,14 +9,10 @@ define(function(require,exports,module){
         },
         methods:{
             _process:function(data,callback){
-                var frames = data.frames;
-                var smalls = data.smalls;
-                var total = frames.length;
-                callback(null,{curr:curr,frames:frames,smalls:smalls});
-                curr++;
-                if(curr == total){
-                    curr = 0;
-                }
+                var delay = data.delay;
+                setTimeout(function(){
+                    callback(null,{frames:data.frames,smalls:data.smalls});
+                },delay);
             }
         }
     });
