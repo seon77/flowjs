@@ -9,6 +9,8 @@ define(function(require,exports,module){
     var GetDoms = require('../steps/getDoms');
     var HighlightSmall = require('../steps/highlightSmall');
     var Delay = require('../steps/delay');
+    var BindEvent = require('../steps/bindEvent');
+    var GotoFocus = require('../steps/gotoFocus');
     var ConsoleFlow = Class({
         extend:Flow,
         construct:function(options){
@@ -77,10 +79,38 @@ define(function(require,exports,module){
                         type:'object'
                     }
                 }});
+                var step9 = new BindEvent({
+                    description:'bind event',
+                    struct:{
+                        frames:{
+                            type:'object'
+                        },
+                        smalls:{
+                            type:'object'
+                        }
+                    },
+                    inputs:{
+                        'click':function(data){
+                            _this.go(step5,data);
+                        }
+                    }
+                });
+                var step10 = new GotoFocus({description:'goto',struct:{
+                    curr:{
+                        type:'number'
+                    },
+                    frames:{
+                        type:'object'
+                    },
+                    smalls:{
+                        type:'object'
+                    }
+                }});
                 this.go(step1);
                 this.go(step2);
                 this.go(step3);
                 this.go(step4);
+                this.go(step9);
                 this.go(step5);
                 this.go(step6);
                 this.go(step7);
