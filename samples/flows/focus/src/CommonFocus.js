@@ -28,6 +28,7 @@ define(function(require, exports, module) {
                         }
                     }
                 });
+                var next = new steps.Next({description:'next'});
                 this.go(step1);
                 this.go(step2);
                 this.go(step3);
@@ -37,6 +38,7 @@ define(function(require, exports, module) {
                 this.go(step6);
                 this.go(step7);
                 this.go(step8);
+                this.go(next);
                 this.go(step5);
             }
         }

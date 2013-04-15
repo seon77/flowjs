@@ -12,7 +12,8 @@ define(function(require, exports, module) {
             GetDoms:require('../src/steps/getDoms'),
             Highlight:require('../src/steps/highlight'),
             Delay:require('../src/steps/delay'),
-            BindEvent:require('../src/steps/bindEvent')
+            BindEvent:require('../src/steps/bindEvent'),
+            Next:require('../src/steps/next')
         }
     });
 });
