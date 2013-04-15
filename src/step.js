@@ -11,7 +11,7 @@ define(function(require,exports,module){
             }
             this._data = {};
             this._data.description = options.description;
-            this._data.struct = options.struct;
+            this._struct = this._describeData();
             this._next = null;
             this._end = false;
         },
@@ -23,6 +23,9 @@ define(function(require,exports,module){
                 this._process(data,callback);
             },
             _process:Class.abstractMethod,
+            _describeData:function(){
+                return {};
+            },
             next:function(step){
                 if(step){
                     if(!this.isEnd()){
@@ -42,8 +45,11 @@ define(function(require,exports,module){
             data:function(){
                 return this._data;
             },
+            getStruct:function(){
+                return this._struct;
+            },
             __check:function(data){
-                return checkData.check(this._data.struct,data);
+                return checkData.check(this._struct,data);
             }
         }
     });

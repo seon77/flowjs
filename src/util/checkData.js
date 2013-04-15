@@ -11,29 +11,28 @@ define(function (require, exports, module) {
             var result = true;
             for(var key in struct){
                 var item = struct[key];
-                if (!(key in data)) {
-                    throw new Error('缺少字段[' + key + ']');
+                //空值检测
+                if(struct[key].empty === true && self.isEmpty(struct[key], data[key])){
+                    continue;
                 }
-                else {
-                    if (struct[key].type == 'number' && typeof data[key] != 'number') {
-                        throw new Error('字段[' + key + ']不是数字');
+                if (struct[key].type == 'number' && typeof data[key] != 'number') {
+                    throw new Error('字段[' + key + ']不是数字');
+                }
+                else if (struct[key].type == 'string' && typeof data[key] != 'string') {
+                    throw new Error('字段[' + key + ']不是字符串');
+                }
+                else if (struct[key].type == 'array') {
+                    if (!self.checkArray(struct[key], data[key])) {
+                        throw new Error('字段[' + key + ']值与定义不符');
                     }
-                    else if (struct[key].type == 'string' && typeof data[key] != 'string') {
-                        throw new Error('字段[' + key + ']不是字符串');
+                }
+                else if (struct[key].type == 'object') {
+                    if (!self.checkObject(struct[key].struct, data[key])) {
+                        throw new Error('字段[' + key + ']值与定义不符');
                     }
-                    else if (struct[key].type == 'array') {
-                        if (!self.checkArray(struct[key], data[key])) {
-                            throw new Error('字段[' + key + ']值与定义不符');
-                        }
-                    }
-                    else if (struct[key].type == 'object') {
-                        if (!self.checkObject(struct[key].struct, data[key])) {
-                            throw new Error('字段[' + key + ']值与定义不符');
-                        }
-                    }
-                    else if (struct[key].empty !== true && self.isEmpty(struct[key], data[key])) {
-                        throw new Error('字段[' + key + ']值为空');
-                    }
+                }
+                else if (struct[key].empty !== true && self.isEmpty(struct[key], data[key])) {
+                    throw new Error('字段[' + key + ']值为空');
                 }
             }
             return result;
@@ -57,6 +56,9 @@ define(function (require, exports, module) {
             return this.check(rule, data);
         },
         isEmpty:function (rule, data) {
+            if(data === undefined){
+                return true;
+            }
             if (rule.type == 'object') {
                 return data === null;
             }
@@ -64,7 +66,7 @@ define(function (require, exports, module) {
                 return data.length == 0;
             }
             else {
-                return data === '';
+                return (data === '' || data === undefined || data === null);
             }
         },
         checkData:function (rule, data) {

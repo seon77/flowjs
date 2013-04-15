@@ -1,7 +1,7 @@
 define(function(require,exports,module){
     var Class = require('./util/class');
     var ConditionStep = require('./condition');
-    var TimerStep = require('./timer');
+    var InputStep = require('./input');
     var Drawer = Class({
         construct:function(options){
             this._flow = options.flow;
@@ -14,8 +14,11 @@ define(function(require,exports,module){
                         cases.cases[key]();
                     }
                 }
-                else if(step instanceof TimerStep){
-                    step.callback()();
+                else if(step instanceof InputStep){
+                    var inputs = step.inputs();
+                    for(var key in inputs){
+                        inputs[key]();
+                    }
                 }
                 callback.call(this);
             }

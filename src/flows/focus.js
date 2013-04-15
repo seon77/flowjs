@@ -95,17 +95,6 @@ define(function(require,exports,module){
                         }
                     }
                 });
-                var step10 = new GotoFocus({description:'goto',struct:{
-                    curr:{
-                        type:'number'
-                    },
-                    frames:{
-                        type:'object'
-                    },
-                    smalls:{
-                        type:'object'
-                    }
-                }});
                 this.go(step1);
                 this.go(step2);
                 this.go(step3);
