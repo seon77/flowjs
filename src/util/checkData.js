@@ -1,7 +1,5 @@
 define(function (require, exports, module) {
-    var isArray = Array.isArray || function(arg){
-        return Object.prototype.toString.call(arg) == '[object Array]';
-    }
+    var tool = require("./tool");
     module.exports = {
         check:function (struct, data) {
             var self = this;
@@ -39,7 +37,7 @@ define(function (require, exports, module) {
         },
         checkArray:function (rule, data) {
             var self = this;
-            if (isArray(data)) {
+            if (tool.isArray(data)) {
                 for (var i = 0; i < data.length; i++){
                     var item = data[i];
                     if (!self.checkData(rule.item, item)) {
