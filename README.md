@@ -84,11 +84,9 @@ Step定义
 
 以上定义了一个步骤，要求输入的数据对象结构为：{curr:1,frames:{}}
 
-v0.1.1更新
+v0.1.2更新
 ---------
 
-焦点图demo增加切换标题的Step
+Step的数据结构定义拆分为input和output
 
-修复焦点图demo不能播放最后一帧的bug
-
-数据池切换为外部插件，便于扩展
+焦点图demo的step定义input和output
