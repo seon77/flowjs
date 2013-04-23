@@ -19,11 +19,13 @@ define(function(require, exports, module) {
                 var play = new steps.Play({description:'play'});
                 var highlight = new steps.Highlight({description:'highlight'});
                 var delay = new steps.Delay({description:'delay'});
+                var goto = new steps.Goto({description:'goto'});
                 var bindEvent = new steps.BindEvent({
                     description:'bind event',
                     inputs:{
                         'click':function(data){
-                            _this.go(step5,data);
+                            _this.go(goto,data);
+                            _this.go(play);
                         }
                     }
                 });

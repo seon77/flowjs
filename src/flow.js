@@ -48,8 +48,8 @@ define(function(require,exports,module){
                         this._saveData(result);
                     }
                     var next = this._getNext(step);
-                    var nextData = this._getStepData(next);
                     if(next){
+                        var nextData = this._getStepData(next);
                         this._process(next,nextData);
                     }
                 });
@@ -76,9 +76,11 @@ define(function(require,exports,module){
             _getStepData:function(step){
                 var struct = step.getStruct();
                 var dataNames = [];
-                for(var key in struct){
-                    if(struct.hasOwnProperty(key)){
-                        dataNames.push(key);
+                if(struct && struct.input){
+                    for(var key in struct.input){
+                        if(struct.input.hasOwnProperty(key)){
+                            dataNames.push(key);
+                        }
                     }
                 }
                 return this._data.getData(dataNames);

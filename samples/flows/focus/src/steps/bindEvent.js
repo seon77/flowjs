@@ -14,8 +14,7 @@ define(function(require,exports,module){
                     smalls.on("mouseover",function(e){
                         var target = Q.$(Q.event.get(e).target);
                         _this._inputs['click'].call(_this,{
-                            curr:target.attr('_index') - 1,
-                            frames:data.frames
+                            curr:parseInt(target.attr('_index') - 1)
                         });
                     });
                 });
@@ -23,11 +22,13 @@ define(function(require,exports,module){
             },
             _describeData:function(){
                 return {
-                    frames:{
-                        type:'object'
-                    },
-                    smalls:{
-                        type:'object'
+                    input:{
+                        frames:{
+                            type:'object'
+                        },
+                        smalls:{
+                            type:'object'
+                        }
                     }
                 };
             }

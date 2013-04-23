@@ -14,12 +14,15 @@ define(function(require,exports,module){
             },
             _describeData:function(){
                 return {
-                    frames:{
-                        type:'object'
+                    input:{
+                        frames:{
+                            type:'object'
+                        }
                     },
-                    curr:{
-                        type:'number',
-                        empty:true
+                    output:{
+                        curr:{
+                            type:'number'
+                        }
                     }
                 };
             }

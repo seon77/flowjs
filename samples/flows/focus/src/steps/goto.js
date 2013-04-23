@@ -1,25 +1,26 @@
 define(function(require,exports,module){
     var Class = Flowjs.Class;
     var Step = Flowjs.Step;
-    var FocusGenerator = Class({
+    var Next = Class({
         extend:Step,
         construct:function(options){
             this.callsuper(options);
         },
         methods:{
             _process:function(data,callback){
-                callback();
+                var curr = data.curr;
+                callback(null,{curr:curr});
             },
             _describeData:function(){
                 return {
                     input:{
-                        template:{
-                            type:'string',
-                            empty:true
-                        },
-                        data:{
-                            type:'object',
-                            empty:true
+                        curr:{
+                            type:'number'
+                        }
+                    },
+                    output:{
+                        curr:{
+                            type:'number'
                         }
                     }
                 };
@@ -27,5 +28,5 @@ define(function(require,exports,module){
         }
     });
     
-    module.exports = FocusGenerator;
+    module.exports = Next;
 });

@@ -10,10 +10,10 @@ define(function (require, exports, module) {
             for(var key in struct){
                 var item = struct[key];
                 //空值检测
-                if(struct[key].empty === true && self.isEmpty(struct[key], data[key])){
-                    continue;
+                if(struct[key].empty !== true && self.isEmpty(struct[key], data[key])){
+                    throw new Error('字段[' + key + ']值为空');
                 }
-                if (struct[key].type == 'number' && typeof data[key] != 'number') {
+                else if (struct[key].type == 'number' && typeof data[key] != 'number') {
                     throw new Error('字段[' + key + ']不是数字');
                 }
                 else if (struct[key].type == 'string' && typeof data[key] != 'string') {
@@ -28,9 +28,6 @@ define(function (require, exports, module) {
                     if (!self.checkObject(struct[key].struct, data[key])) {
                         throw new Error('字段[' + key + ']值与定义不符');
                     }
-                }
-                else if (struct[key].empty !== true && self.isEmpty(struct[key], data[key])) {
-                    throw new Error('字段[' + key + ']值为空');
                 }
             }
             return result;

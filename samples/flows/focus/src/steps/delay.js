@@ -19,8 +19,10 @@ define(function(require,exports,module){
             },
             _describeData:function(){
                 return {
-                    delay:{
-                        type:'number'
+                    input:{
+                        delay:{
+                            type:'number'
+                        }
                     }
                 };
             }

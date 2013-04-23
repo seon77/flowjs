@@ -16,11 +16,18 @@ define(function(require,exports,module){
             },
             _describeData:function(){
                 return {
-                    smalls:{
-                        type:'object'
+                    input:{
+                        smalls:{
+                            type:'object'
+                        },
+                        curr:{
+                            type:'number'
+                        }
                     },
-                    curr:{
-                        type:'number'
+                    output:{
+                        delay:{
+                            type:'number'
+                        }
                     }
                 };
             }

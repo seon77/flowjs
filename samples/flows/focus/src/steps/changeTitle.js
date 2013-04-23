@@ -13,14 +13,16 @@ define(function(require,exports,module){
             },
             _describeData:function(){
                 return {
-                    cnt:{
-                        type:'object'
-                    },
-                    data:{
-                        type:'object'
-                    },
-                    curr:{
-                        type:'number'
+                    input:{
+                        cnt:{
+                            type:'object'
+                        },
+                        data:{
+                            type:'object'
+                        },
+                        curr:{
+                            type:'number'
+                        }
                     }
                 };
             }

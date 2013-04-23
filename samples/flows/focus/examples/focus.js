@@ -14,7 +14,8 @@ define(function(require, exports, module) {
             Delay:require('../src/steps/delay'),
             BindEvent:require('../src/steps/bindEvent'),
             Next:require('../src/steps/next'),
-            ChangeTitle:require('../src/steps/changeTitle')
+            ChangeTitle:require('../src/steps/changeTitle'),
+            Goto:require('../src/steps/Goto')
         }
     });
 });

@@ -20,11 +20,13 @@ define(function(require,exports,module){
             },
             _describeData:function(){
                 return {
-                    curr:{
-                        type:'number'
-                    },
-                    frames:{
-                        type:'object'
+                    input:{
+                        curr:{
+                            type:'number'
+                        },
+                        frames:{
+                            type:'object'
+                        }
                     }
                 };
             }

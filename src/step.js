@@ -17,10 +17,16 @@ define(function(require,exports,module){
         },
         methods:{
             enter:function(data,callback){
-                if(!this.__check(data)){
+                if(!this.__checkInput(data)){
                     throw new Error('Data error.');
                 }
-                this._process(data,callback);
+                var _this = this;
+                this._process(data,function(err,result){
+                    if(!_this.__checkOutput(result)){
+                        throw new Error('Result error.');
+                    }
+                    callback(err,result);
+                });
             },
             _process:Class.abstractMethod,
             _describeData:function(){
@@ -48,8 +54,11 @@ define(function(require,exports,module){
             getStruct:function(){
                 return this._struct;
             },
-            __check:function(data){
-                return checkData.check(this._struct,data);
+            __checkInput:function(data){
+                return checkData.check(this._struct.input,data);
+            },
+            __checkOutput:function(data){
+                return checkData.check(this._struct.output,data);
             }
         }
     });
