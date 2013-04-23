@@ -1,5 +1,4 @@
 define(function(require,exports,module){
-
     var Class = Flowjs.Class;
     var Step = Flowjs.Step;
     var FocusData = Class({
@@ -9,7 +8,18 @@ define(function(require,exports,module){
         },
         methods:{
             _process:function(data,callback){
-                callback(null,{data:{}});
+                callback(null,{data:{list:[
+                    {title:Math.random().toString()},
+                    {title:Math.random().toString()},
+                    {title:Math.random().toString()},
+                    {title:Math.random().toString()},
+                    {title:Math.random().toString()},
+                    {title:Math.random().toString()},
+                    {title:Math.random().toString()},
+                    {title:Math.random().toString()},
+                    {title:Math.random().toString()},
+                    {title:Math.random().toString()}
+                ]}});
             }
         }
     });

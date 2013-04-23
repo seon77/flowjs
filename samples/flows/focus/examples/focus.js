@@ -13,7 +13,8 @@ define(function(require, exports, module) {
             Highlight:require('../src/steps/highlight'),
             Delay:require('../src/steps/delay'),
             BindEvent:require('../src/steps/bindEvent'),
-            Next:require('../src/steps/next')
+            Next:require('../src/steps/next'),
+            ChangeTitle:require('../src/steps/changeTitle')
         }
     });
 });

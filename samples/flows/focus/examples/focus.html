@@ -157,7 +157,12 @@
         </div>
         <script type="text/javascript" src="http://static.qiyi.com/js/lib/sea1.2.js"></script>
         <script>
-            seajs.use('../../../../src/index',function(Flowjs){
+            seajs.config({
+                alias:{
+                    'Flowjs':'../../../../src/index'
+                }
+            });
+            seajs.use('Flowjs',function(Flowjs){
                 window.Flowjs = Flowjs;
                 seajs.use('./focus',function(focus){
                     focus.start();

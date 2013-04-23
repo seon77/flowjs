@@ -36,8 +36,8 @@ define(function (require, exports, module) {
                     var length = dataNames.length;
                     for (var i = 0; i < length; i++) {
                         var name = dataNames[i];
-                        if (this._data[name] && this._data[name]["exp"] > now) {
-                            result[name] = this._data[name]["data"]
+                        if(this._data.hasOwnProperty(name)){
+                            result[name] = this._data[name];
                         }
                     }
                 } else {
@@ -45,21 +45,12 @@ define(function (require, exports, module) {
                 }
                 return result;
             },
-            setData: function (opt) {
-                var name = opt.name;
-                if (name) {
-                    var data = opt.data;
-                    var exp = opt.exp || 9366122571939;
-                    this._data[name] = {
-                        exp: exp,
-                        data: data
-                    };
-                    return true;
-                }
+            setData: function (dataName,data) {
+                this._data[dataName] = data;
                 return false;
             }
         }
     })
 
-
+    module.exports = FlowData;
 });

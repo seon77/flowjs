@@ -5,6 +5,7 @@ define(function(require,exports,module){
     var Begin = require('./begin');
     var Step = require('./step');
     var Queue = require('./util/queue');
+    var Data = require('./util/flowData');
     var Flow = Class({
         plugins:[new EventPlugin()],
         construct:function(options){
@@ -15,7 +16,7 @@ define(function(require,exports,module){
             this._started = false;
             this._timer = null;
             this._prev = this._begin;
-            this._datas = {};
+            this._data = new Data();
         },
         methods:{
             //初始化流程
@@ -43,13 +44,22 @@ define(function(require,exports,module){
             },
             _process:function(step,data){
                 this._enter(step,data,function(result){
-                    extend(this._datas,result);
+                    if(result){
+                        this._saveData(result);
+                    }
                     var next = this._getNext(step);
                     var nextData = this._getStepData(next);
                     if(next){
                         this._process(next,nextData);
                     }
                 });
+            },
+            _saveData:function(result){
+                for(var key in result){
+                    if(result.hasOwnProperty(key)){
+                        this._data.setData(key,result[key]);
+                    }
+                }
             },
             _getNext:function(step){
                 var result = step.__result,next = null;
@@ -65,13 +75,13 @@ define(function(require,exports,module){
             },
             _getStepData:function(step){
                 var struct = step.getStruct();
-                var data = {};
+                var dataNames = [];
                 for(var key in struct){
-                    if(struct.hasOwnProperty(key) && this._datas.hasOwnProperty(key)){
-                        data[key] = this._datas[key];
+                    if(struct.hasOwnProperty(key)){
+                        dataNames.push(key);
                     }
                 }
-                return data;
+                return this._data.getData(dataNames);
             },
             _enter:function(step,data,callback){
                 var _this = this;

@@ -1,7 +1,6 @@
 define(function(require,exports,module){
     var Class = Flowjs.Class;
     var Step = Flowjs.Step;
-    var curr = 0;
     var StartFocus = Class({
         extend:Step,
         construct:function(options){
@@ -11,10 +10,7 @@ define(function(require,exports,module){
             _process:function(data,callback){
                 var frames = data.frames;
                 var total = frames.length;
-                if(data.hasOwnProperty('curr')){
-                    curr = data.curr;
-                }
-                callback(null,{curr:curr});
+                callback(null,{curr:0});
             },
             _describeData:function(){
                 return {

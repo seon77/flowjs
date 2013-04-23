@@ -1,5 +1,4 @@
 define(function(require,exports,module){
-
     var Class = Flowjs.Class;
     var Step = Flowjs.InputStep;
     var ConditionStep = Class({

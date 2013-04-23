@@ -10,7 +10,7 @@ define(function(require,exports,module){
             _process:function(data,callback){
                 var total = data.frames.length;
                 var curr = data.curr + 1;
-                if(curr == total - 1){
+                if(curr == total){
                     curr = 0;
                 }
                 console.log(curr);

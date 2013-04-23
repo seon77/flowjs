@@ -1,5 +1,4 @@
 define(function(require, exports, module) {
-
     var Class = Flowjs.Class;
     var Flow = Flowjs.Flow;
     var CommonFocusFlow = Class({
@@ -12,15 +11,15 @@ define(function(require, exports, module) {
             start:function(){
                 var _this = this;
                 var steps = this._steps;
-                var step1 = new steps.GetData({description:'get data'});
-                var step2 = new steps.GetTemplate({description:'get template'});
-                var step3 = new steps.Render({description:'generate'});
-                var step4 = new steps.GetDoms({description:'get doms'});
-                var step5 = new steps.Start({description:'start'});
-                var step6 = new steps.Play({description:'play'});
-                var step7 = new steps.Highlight({description:'highlight'});
-                var step8 = new steps.Delay({description:'delay'});
-                var step9 = new steps.BindEvent({
+                var getData = new steps.GetData({description:'get data'});
+                var getTemplate = new steps.GetTemplate({description:'get template'});
+                var render = new steps.Render({description:'generate'});
+                var getDoms = new steps.GetDoms({description:'get doms'});
+                var start = new steps.Start({description:'start'});
+                var play = new steps.Play({description:'play'});
+                var highlight = new steps.Highlight({description:'highlight'});
+                var delay = new steps.Delay({description:'delay'});
+                var bindEvent = new steps.BindEvent({
                     description:'bind event',
                     inputs:{
                         'click':function(data){
@@ -29,17 +28,19 @@ define(function(require, exports, module) {
                     }
                 });
                 var next = new steps.Next({description:'next'});
-                this.go(step1);
-                this.go(step2);
-                this.go(step3);
-                this.go(step4);
-                this.go(step9);
-                this.go(step5);
-                this.go(step6);
-                this.go(step7);
-                this.go(step8);
+                var changeTitle = new steps.ChangeTitle({description:'change title.'});
+                this.go(getData);
+                this.go(getTemplate);
+                this.go(render);
+                this.go(getDoms);
+                this.go(bindEvent);
+                this.go(start);
+                this.go(play);
+                this.go(highlight);
+                this.go(changeTitle);
+                this.go(delay);
                 this.go(next);
-                this.go(step5);
+                this.go(play);
             }
         }
     });
