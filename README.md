@@ -54,14 +54,33 @@ step5是一个条件判断的步骤，这里会进行判断
 Step定义
 -------
 
-    var step5 = new SwitchFocus({description:'switch',struct:{
-        curr:{
-            type:'number'
+    var Next = Class({
+        extend:Step,
+        construct:function(options){
+            this.callsuper(options);
         },
-        frames:{
-            type:'object'
+        methods:{
+            _process:function(data,callback){
+                var total = data.frames.length;
+                var curr = data.curr + 1;
+                if(curr == total){
+                    curr = 0;
+                }
+                console.log(curr);
+                callback(null,{curr:curr});
+            },
+            _describeData:function(){
+                return {
+                    frames:{
+                        type:'object'
+                    },
+                    curr:{
+                        type:'number'
+                    }
+                };
+            }
         }
-    }});
+    });
 
 以上定义了一个步骤，要求输入的数据对象结构为：{curr:1,frames:{}}
 
