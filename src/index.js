@@ -1,5 +1,5 @@
 define(function(require,exports,module){
-    module.exports = {
+    window.Flowjs = {
         Class:require('./util/class'),
         Flow:require('./flow'),
         Step:require('./step'),
