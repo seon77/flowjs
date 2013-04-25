@@ -13,6 +13,9 @@ define(function (require, exports, module) {
                 if(struct[key].empty !== true && self.isEmpty(struct[key], data[key])){
                     throw new Error('字段[' + key + ']值为空');
                 }
+                else if (struct[key].empty === true && self.isEmpty(struct[key], data[key])) {
+                    continue;
+                }
                 else if (struct[key].type == 'number' && typeof data[key] != 'number') {
                     throw new Error('字段[' + key + ']不是数字');
                 }
