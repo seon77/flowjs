@@ -15,7 +15,7 @@ define(function(require, exports, module) {
             BindEvent:require('../src/steps/bindEvent'),
             Next:require('../src/steps/next'),
             ChangeTitle:require('../src/steps/changeTitle'),
-            Goto:require('../src/steps/Goto')
+            Goto:require('../src/steps/goto')
         }
     });
 });

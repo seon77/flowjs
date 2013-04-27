@@ -15,7 +15,7 @@ define(function(require,exports,module){
             },
             cases:function(){
                 return {
-                    default:this._default,
+                    defaultCase:this._default,
                     cases:this._cases
                 }
             }
