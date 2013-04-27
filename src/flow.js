@@ -39,7 +39,7 @@ define(function(require,exports,module){
             _start:function(){
                 var item = this._queue.dequeue();
                 if(item){
-                    this._process(item.step,item.data);
+                    this._process(item.step,item.data || this._getStepData(item.step));
                 }
             },
             _process:function(step,data){
