@@ -84,9 +84,7 @@ Step定义
 
 以上定义了一个步骤，要求输入的数据对象结构为：{curr:1,frames:{}}
 
-v0.1.2更新
+v1.0.0发布
 ---------
 
-Step的数据结构定义拆分为input和output
-
-焦点图demo的step定义input和output
+发布包括sea模块和独立运行文件，压缩和不压缩共4个文件
