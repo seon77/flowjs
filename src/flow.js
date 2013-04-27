@@ -4,6 +4,7 @@ define(function(require,exports,module){
     var extend = require('./util/extend');
     var Begin = require('./begin');
     var Step = require('./step');
+    var Input = require('./input');
     var Queue = require('./util/queue');
     var Data = require('./util/flowData');
     var Flow = Class({
