@@ -43,6 +43,10 @@ define(function(require, exports, module) {
                 this.go(delay);
                 this.go(next);
                 this.go(play);
+                this._addInterface('goto',function(n){
+                    this.go(goto,{curr:n});
+                    _this.go(play);
+                });
             }
         }
     });

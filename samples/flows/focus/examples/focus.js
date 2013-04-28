@@ -18,5 +18,7 @@ define(function(require, exports, module) {
             Goto:require('../src/steps/goto')
         }
     });
+
+    window.focus = module.exports;
 });
 

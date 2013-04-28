@@ -7,6 +7,7 @@ define(function(require,exports,module){
     var Input = require('./input');
     var Queue = require('./util/queue');
     var Data = require('./util/flowData');
+    var reserve = [];
     var Flow = Class({
         plugins:[new EventPlugin()],
         construct:function(options){
@@ -18,6 +19,10 @@ define(function(require,exports,module){
             this._timer = null;
             this._prev = this._begin;
             this._data = new Data();
+            this._interfaces = {};
+            for(var key in this){
+                reserve.push(key);
+            }
         },
         methods:{
             //初始化流程
@@ -37,6 +42,13 @@ define(function(require,exports,module){
                     step.end();
                     _this._start();
                 },0);
+            },
+            _addInterface:function(name,fn){
+                if(reserve.indexOf(name) != -1){
+                    throw new Error('Reserve property : ' + name);
+                }
+                this[name] = fn;
+                this._interfaces[name] = fn;
             },
             _start:function(){
                 var item = this._queue.dequeue();
