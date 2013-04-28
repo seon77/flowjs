@@ -231,14 +231,19 @@
             if (!options.description) {
                 throw new Error("Need a description.");
             }
-            this._data = {};
-            this._data.description = options.description;
-            this._struct = this._describeData();
-            this._next = null;
-            this._end = false;
+            this._data = {
+                __id: Date.now(),
+                description: options.description
+            };
+            this.__struct = this._describeData();
+            this.__next = null;
+            this.__end = false;
+            this.__pausing = false;
+            this.__callback = null;
         },
         methods: {
             enter: function(data, callback) {
+                this.__pausing = false;
                 if (!this.__checkInput(data)) {
                     throw new Error("Data error.");
                 }
@@ -247,7 +252,14 @@
                     if (!_this.__checkOutput(result)) {
                         throw new Error("Result error.");
                     }
-                    callback(err, result);
+                    var cb = function() {
+                        callback(err, result);
+                    };
+                    if (!_this.__pausing) {
+                        cb();
+                    } else {
+                        _this.__callback = cb;
+                    }
                 });
             },
             _process: Class.abstractMethod,
@@ -257,29 +269,39 @@
             next: function(step) {
                 if (step) {
                     if (!this.isEnd()) {
-                        this._next = step;
+                        this.__next = step;
+                        this.end();
                     }
                 } else {
-                    return this._next;
+                    return this.__next;
                 }
             },
             end: function() {
-                this._end = true;
+                this.__end = true;
             },
             isEnd: function() {
-                return this._end;
+                return this.__end;
             },
             data: function() {
                 return this._data;
             },
             getStruct: function() {
-                return this._struct;
+                return this.__struct;
+            },
+            pause: function() {
+                this.__pausing = true;
+            },
+            resume: function() {
+                this.__pausing = false;
+                if (this.__callback) {
+                    this.__callback();
+                }
             },
             __checkInput: function(data) {
-                return checkData.check(this._struct.input, data);
+                return checkData.check(this.__struct.input, data);
             },
             __checkOutput: function(data) {
-                return checkData.check(this._struct.output, data);
+                return checkData.check(this.__struct.output, data);
             }
         }
     });
@@ -296,7 +318,30 @@
     module["__6"]=Begin;
 })(_qc);(function (module) {
     var Class = module["__1"];
-    module["__10"]=Class({
+    var Step = module["__7"];
+    var Condition = Class({
+        extend: Step,
+        construct: function(options) {
+            this.callsuper(options);
+            this._inputs = options.inputs || {};
+            this._waiting = false;
+        },
+        methods: {
+            _wait: function(callback) {
+                if (!this._waiting) {
+                    this._waiting = true;
+                    callback();
+                }
+            },
+            inputs: function() {
+                return this._inputs;
+            }
+        }
+    });
+    module["__10"]=Condition;
+})(_qc);(function (module) {
+    var Class = module["__1"];
+    module["__11"]=Class({
         construct: function() {
             this._queue = [];
             this._event = {};
@@ -368,87 +413,135 @@
             }
         }
     });
-    module["__11"]=FlowData;
+    module["__12"]=FlowData;
 })(_qc);(function (module) {
     var Class = module["__1"];
     var EventPlugin = module["__4"];
     var extend = module["__5"];
     var Begin = module["__6"];
     var Step = module["__7"];
-    var Queue = module["__10"];
-    var Data = module["__11"];
+    var Input = module["__10"];
+    var Queue = module["__11"];
+    var Data = module["__12"];
+    var reserve = [];
     var Flow = Class({
         plugins: [ new EventPlugin ],
         construct: function(options) {
-            this._begin = new Begin({
+            this.__begin = new Begin({
                 description: "Begin",
                 struct: {}
             });
-            this._steps = options.steps;
-            this._curr = this._begin;
-            this._queue = new Queue;
-            this._started = false;
-            this._timer = null;
-            this._prev = this._begin;
-            this._data = new Data;
+            this.__steps = options.steps;
+            this.__queue = new Queue;
+            this.__timer = null;
+            this.__prev = this.__begin;
+            this.__data = new Data;
+            this.__interfaces = {};
+            this.__pausing = {};
+            this.__working = {};
+            for (var key in this) {
+                reserve.push(key);
+            }
         },
         methods: {
             start: Class.abstractMethod,
             go: function(step, data) {
                 var _this = this;
-                this._queue.enqueue({
+                this.__queue.enqueue({
                     step: step,
                     data: data
                 });
-                if (this._prev) {
-                    this._prev.next(step);
+                if (this.__prev) {
+                    this.__prev.next(step);
                 }
-                this._prev = step;
-                if (this._timer) {
-                    clearTimeout(this._timer);
+                this.__prev = step;
+                if (this.__timer) {
+                    clearTimeout(this.__timer);
                 }
-                this._timer = setTimeout(function() {
+                this.__timer = setTimeout(function() {
                     step.end();
-                    _this._start();
+                    _this.__start();
                 }, 0);
             },
-            _start: function() {
-                var item = this._queue.dequeue();
-                if (item) {
-                    this._process(item.step, item.data || this._getStepData(item.step));
+            pause: function() {
+                for (var key in this.__working) {
+                    if (this.__working.hasOwnProperty(key)) {
+                        this.__working[key].pause();
+                        this.__pausing[key] = this.__working[key];
+                        delete this.__working[key];
+                    }
                 }
             },
-            _process: function(step, data) {
-                this._enter(step, data, function(result) {
-                    if (result) {
-                        this._saveData(result);
+            resume: function() {
+                for (var key in this.__pausing) {
+                    if (this.__pausing.hasOwnProperty(key)) {
+                        this.__pausing[key].resume();
+                        this.__working[key] = this.__pausing[key];
+                        delete this.__pausing[key];
                     }
-                    var next = this._getNext(step);
+                }
+            },
+            steps: function() {
+                return this.__steps;
+            },
+            _addInterface: function(name, fn) {
+                if (reserve.indexOf(name) != -1) {
+                    throw new Error("Reserve property : " + name);
+                }
+                this[name] = fn;
+                this.__interfaces[name] = fn;
+            },
+            __start: function() {
+                var item = this.__queue.dequeue();
+                if (item) {
+                    var data = this.__getStepData(item.step);
+                    extend(data, item.data);
+                    this.__process(item.step, data);
+                }
+            },
+            __process: function(step, data) {
+                this.__working[step.data().__id] = step;
+                this.__enter(step, data, function(result) {
+                    delete this.__working[step.data().__id];
+                    if (result) {
+                        this.__saveData(result);
+                    }
+                    var next = this.__getNext(step);
                     if (next) {
-                        var nextData = this._getStepData(next);
-                        this._process(next, nextData);
+                        this.__process(next.step, next.data);
                     }
                 });
             },
-            _saveData: function(result) {
+            __saveData: function(result) {
                 for (var key in result) {
                     if (result.hasOwnProperty(key)) {
-                        this._data.setData(key, result[key]);
+                        this.__data.setData(key, result[key]);
                     }
                 }
             },
-            _getNext: function(step) {
+            __getNext: function(step) {
                 var result = step.__result, next = null;
-                var item = this._queue.dequeue();
+                var item = this.__queue.dequeue();
                 var next = null;
                 if (item) {
-                    next = item.step;
+                    var data = this.__getStepData(item.step);
+                    extend(data, item.data);
+                    next = {
+                        step: item.step,
+                        data: data
+                    };
                 } else {
-                    next = step.next();
+                    var ns = step.next();
+                    if (ns) {
+                        next = {
+                            step: ns,
+                            data: this.__getStepData(ns)
+                        };
+                    }
                 }
                 return next;
             },
-            _getStepData: function(step) {
+            __getStepData: function(step) {
                 var struct = step.getStruct();
                 var dataNames = [];
                 if (struct && struct.input) {
@@ -458,11 +551,10 @@
                         }
                     }
                 }
-                return this._data.getData(dataNames);
+                return this.__data.getData(dataNames);
             },
-            _enter: function(step, data, callback) {
+            __enter: function(step, data, callback) {
                 var _this = this;
-                this._curr = step;
                 step.enter(data, function(err, result) {
                     step.__result = result;
                     callback.call(_this, result);
@@ -494,36 +586,13 @@
             }
         }
     });
-    module["__12"]=Condition;
-})(_qc);(function (module) {
-    var Class = module["__1"];
-    var Step = module["__7"];
-    var Condition = Class({
-        extend: Step,
-        construct: function(options) {
-            this.callsuper(options);
-            this._inputs = options.inputs || {};
-            this._waiting = false;
-        },
-        methods: {
-            _wait: function(callback) {
-                if (!this._waiting) {
-                    this._waiting = true;
-                    callback();
-                }
-            },
-            inputs: function() {
-                return this._inputs;
-            }
-        }
-    });
     module["__13"]=Condition;
 })(_qc);(function (module) {
     window.Flowjs = {
         Class: module["__1"],
         Flow: module["__3"],
         Step: module["__7"],
-        Condition: module["__12"],
-        Input: module["__13"]
+        Condition: module["__13"],
+        Input: module["__10"]
     };
 })(_qc);})(this);

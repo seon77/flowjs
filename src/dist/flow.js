@@ -289,7 +289,6 @@
                 return this.__struct;
             },
             pause: function() {
-                console.log(this._data.description + " paused");
                 this.__pausing = true;
             },
             resume: function() {
