@@ -71,11 +71,18 @@ Step定义
             },
             _describeData:function(){
                 return {
-                    frames:{
-                        type:'object'
+                    input:{
+                        frames:{
+                            type:'object'
+                        },
+                        curr:{
+                            type:'number'
+                        }
                     },
-                    curr:{
-                        type:'number'
+                    output:{
+                        curr:{
+                            type:'number'
+                        }
                     }
                 };
             }
