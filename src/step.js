@@ -9,14 +9,19 @@ define(function(require,exports,module){
             if(!options.description){
                 throw new Error('Need a description.');
             }
-            this._data = {};
-            this._data.description = options.description;
-            this._struct = this._describeData();
-            this._next = null;
-            this._end = false;
+            this._data = {
+                __id:Date.now(),
+                description:options.description
+            };
+            this.__struct = this._describeData();
+            this.__next = null;
+            this.__end = false;
+            this.__pausing = false;
+            this.__callback = null;
         },
         methods:{
             enter:function(data,callback){
+                this.__pausing = false;
                 if(!this.__checkInput(data)){
                     throw new Error('Data error.');
                 }
@@ -25,7 +30,15 @@ define(function(require,exports,module){
                     if(!_this.__checkOutput(result)){
                         throw new Error('Result error.');
                     }
-                    callback(err,result);
+                    var cb = function(){
+                        callback(err,result);
+                    };
+                    if(!_this.__pausing){
+                        cb();
+                    }
+                    else{
+                        _this.__callback = cb;
+                    }
                 });
             },
             _process:Class.abstractMethod,
@@ -35,32 +48,43 @@ define(function(require,exports,module){
             next:function(step){
                 if(step){
                     if(!this.isEnd()){
-                        this._next = step;
+                        this.__next = step;
                         //流程不允许改变，因此设置好下一步后，就锁定该流程
                         this.end();
                     }
                 }
                 else{
-                    return this._next;
+                    return this.__next;
                 }
             },
             end:function(){
-                this._end = true;
+                this.__end = true;
             },
             isEnd:function(){
-                return this._end;
+                return this.__end;
             },
             data:function(){
                 return this._data;
             },
             getStruct:function(){
-                return this._struct;
+                return this.__struct;
+            },
+            pause:function(){
+                console.log(this._data.description + ' paused')
+                this.__pausing = true;
+            },
+            //一般暂停
+            resume:function(){
+                this.__pausing = false;
+                if(this.__callback){
+                    this.__callback();
+                }
             },
             __checkInput:function(data){
-                return checkData.check(this._struct.input,data);
+                return checkData.check(this.__struct.input,data);
             },
             __checkOutput:function(data){
-                return checkData.check(this._struct.output,data);
+                return checkData.check(this.__struct.output,data);
             }
         }
     });

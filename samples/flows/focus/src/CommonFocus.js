@@ -10,7 +10,7 @@ define(function(require, exports, module) {
             //初始化流程
             start:function(){
                 var _this = this;
-                var steps = this._steps;
+                var steps = this.steps();
                 var getData = new steps.GetData({description:'get data'});
                 var getTemplate = new steps.GetTemplate({description:'get template'});
                 var render = new steps.Render({description:'generate'});
@@ -26,6 +26,12 @@ define(function(require, exports, module) {
                         'click':function(data){
                             _this.go(goto,data);
                             _this.go(play);
+                        },
+                        'mouseonfocus':function(){
+                            _this.pause();
+                        },
+                        'mouseoutfocus':function(){
+                            _this.resume();
                         }
                     }
                 });

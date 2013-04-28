@@ -11,15 +11,15 @@ define(function(require,exports,module){
     var Flow = Class({
         plugins:[new EventPlugin()],
         construct:function(options){
-            this._begin = new Begin({description:'Begin',struct:{}});
-            this._steps = options.steps;
-            this._curr = this._begin;
-            this._queue = new Queue();
-            this._started = false;
-            this._timer = null;
-            this._prev = this._begin;
-            this._data = new Data();
-            this._interfaces = {};
+            this.__begin = new Begin({description:'Begin',struct:{}});
+            this.__steps = options.steps;
+            this.__queue = new Queue();
+            this.__timer = null;
+            this.__prev = this.__begin;
+            this.__data = new Data();
+            this.__interfaces = {};
+            this.__pausing = {};
+            this.__working = {};
             for(var key in this){
                 reserve.push(key);
             }
@@ -29,59 +29,88 @@ define(function(require,exports,module){
             start:Class.abstractMethod,
             go:function(step,data){
                 var _this = this;
-                this._queue.enqueue({step:step,data:data});
-                if(this._prev){
-                    this._prev.next(step);
+                this.__queue.enqueue({step:step,data:data});
+                if(this.__prev){
+                    this.__prev.next(step);
                 }
-                this._prev = step;
-                if(this._timer){
-                    clearTimeout(this._timer);
+                this.__prev = step;
+                if(this.__timer){
+                    clearTimeout(this.__timer);
                 }
-                this._timer = setTimeout(function(){
+                this.__timer = setTimeout(function(){
                     //执行到此，说明一个流程链已经完成，当前步骤为该流程链的末端，不允许再有下一步了
                     step.end();
-                    _this._start();
+                    _this.__start();
                 },0);
+            },
+            pause:function(){
+                for(var key in this.__working){
+                    if(this.__working.hasOwnProperty(key)){
+                        this.__working[key].pause();
+                        this.__pausing[key] = this.__working[key];
+                        delete this.__working[key];
+                    }
+                }
+                //查看是否有泄露
+                // console.log(Object.keys(this.__working));
+                // console.log(Object.keys(this.__pausing));
+            },
+            resume:function(){
+                for(var key in this.__pausing){
+                    if(this.__pausing.hasOwnProperty(key)){
+                        this.__pausing[key].resume();
+                        this.__working[key] = this.__pausing[key];
+                        delete this.__pausing[key];
+                    }
+                }
+                //查看是否有泄露
+                // console.log(Object.keys(this.__working));
+                // console.log(Object.keys(this.__pausing));
+            },
+            steps:function(){
+                return this.__steps;
             },
             _addInterface:function(name,fn){
                 if(reserve.indexOf(name) != -1){
                     throw new Error('Reserve property : ' + name);
                 }
                 this[name] = fn;
-                this._interfaces[name] = fn;
+                this.__interfaces[name] = fn;
             },
-            _start:function(){
-                var item = this._queue.dequeue();
+            __start:function(){
+                var item = this.__queue.dequeue();
                 if(item){
-                    var data = this._getStepData(item.step);
+                    var data = this.__getStepData(item.step);
                     extend(data,item.data);
-                    this._process(item.step,data);
+                    this.__process(item.step,data);
                 }
             },
-            _process:function(step,data){
-                this._enter(step,data,function(result){
+            __process:function(step,data){
+                this.__working[step.data().__id] = step;
+                this.__enter(step,data,function(result){
+                    delete this.__working[step.data().__id];
                     if(result){
-                        this._saveData(result);
+                        this.__saveData(result);
                     }
-                    var next = this._getNext(step);
+                    var next = this.__getNext(step);
                     if(next){
-                        this._process(next.step,next.data);
+                        this.__process(next.step,next.data);
                     }
                 });
             },
-            _saveData:function(result){
+            __saveData:function(result){
                 for(var key in result){
                     if(result.hasOwnProperty(key)){
-                        this._data.setData(key,result[key]);
+                        this.__data.setData(key,result[key]);
                     }
                 }
             },
-            _getNext:function(step){
+            __getNext:function(step){
                 var result = step.__result,next = null;
-                var item = this._queue.dequeue();
+                var item = this.__queue.dequeue();
                 var next = null;
                 if(item){
-                    var data = this._getStepData(item.step);
+                    var data = this.__getStepData(item.step);
                     extend(data,item.data);
                     next = {
                         step:item.step,
@@ -93,13 +122,13 @@ define(function(require,exports,module){
                     if(ns){
                         next = {
                             step:ns,
-                            data:this._getStepData(ns)
+                            data:this.__getStepData(ns)
                         };
                     }
                 }
                 return next;
             },
-            _getStepData:function(step){
+            __getStepData:function(step){
                 var struct = step.getStruct();
                 var dataNames = [];
                 if(struct && struct.input){
@@ -109,11 +138,10 @@ define(function(require,exports,module){
                         }
                     }
                 }
-                return this._data.getData(dataNames);
+                return this.__data.getData(dataNames);
             },
-            _enter:function(step,data,callback){
+            __enter:function(step,data,callback){
                 var _this = this;
-                this._curr = step;
                 step.enter(data,function(err,result){
                     step.__result = result;
                     callback.call(_this,result);
