@@ -70,7 +70,6 @@ define(function(require,exports,module){
                 return this.__struct;
             },
             pause:function(){
-                console.log(this._data.description + ' paused')
                 this.__pausing = true;
             },
             //一般暂停
