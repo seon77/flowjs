@@ -36,6 +36,8 @@ define(function(require,exports,module){
                 if(step){
                     if(!this.isEnd()){
                         this._next = step;
+                        //流程不允许改变，因此设置好下一步后，就锁定该流程
+                        this.end();
                     }
                 }
                 else{

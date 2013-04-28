@@ -33,6 +33,7 @@ define(function(require,exports,module){
                     clearTimeout(this._timer);
                 }
                 this._timer = setTimeout(function(){
+                    //执行到此，说明一个流程链已经完成，当前步骤为该流程链的末端，不允许再有下一步了
                     step.end();
                     _this._start();
                 },0);
@@ -40,7 +41,9 @@ define(function(require,exports,module){
             _start:function(){
                 var item = this._queue.dequeue();
                 if(item){
-                    this._process(item.step,item.data || this._getStepData(item.step));
+                    var data = this._getStepData(item.step);
+                    extend(data,item.data);
+                    this._process(item.step,data);
                 }
             },
             _process:function(step,data){
@@ -50,8 +53,7 @@ define(function(require,exports,module){
                     }
                     var next = this._getNext(step);
                     if(next){
-                        var nextData = this._getStepData(next);
-                        this._process(next,nextData);
+                        this._process(next.step,next.data);
                     }
                 });
             },
@@ -67,10 +69,21 @@ define(function(require,exports,module){
                 var item = this._queue.dequeue();
                 var next = null;
                 if(item){
-                    next = item.step;
+                    var data = this._getStepData(item.step);
+                    extend(data,item.data);
+                    next = {
+                        step:item.step,
+                        data:data
+                    };
                 }
                 else{
-                    next = step.next();
+                    var ns = step.next();
+                    if(ns){
+                        next = {
+                            step:ns,
+                            data:this._getStepData(ns)
+                        };
+                    }
                 }
                 return next;
             },
