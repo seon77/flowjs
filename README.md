@@ -20,26 +20,30 @@ Step类需要明确的定义本步骤所需要的参数。
 Flow定义
 -------
 
-    var step1 = new Step({description:'step1'});
-    var step2 = new Step({description:'step2'});
-    var step3 = new Step({description:'step3'});
-    var step4 = new Step({description:'step4'});
-    var step5 = new ConditionStep({description:'step5',cases:{
-        '1':function(){
-            _this.go(step1);
-        },
-        '2':function(){
-            _this.go(step6);
+    vvar _this = this;
+    var steps = this._steps();
+    this._addStep('step1',new steps.ConsoleStep());
+    this._addStep('step2',new steps.ConsoleStep());
+    this._addStep('step3',new steps.ConsoleStep());
+    this._addStep('step4',new steps.ConsoleStep());
+    this._addStep('step5',new steps.ConditionStep({
+        cases:{
+            '1':function(){
+                _this.go('step1');
+            },
+            '2':function(){
+                _this.go('step6');
+            }
+        },defaultCase:function(){
+            _this.go('step4');
         }
-    },defaultCase:function(){
-        _this.go(step3);
-    }});
-    var step6 = new Step({description:'step6'});
-    this.go(step1);
-    this.go(step2);
-    this.go(step3);
-    this.go(step4);
-    this.go(step5);
+    }));
+    this._addStep('step6',new steps.ConsoleStep());
+    this.go('step1');
+    this.go('step2');
+    this.go('step3');
+    this.go('step4');
+    this.go('step5');
 
 以上流程首先会顺序执行 1 -> 2 -> 3 -> 4 -> 5
 
@@ -49,7 +53,7 @@ step5是一个条件判断的步骤，这里会进行判断
 
 如果结果为2，则执行 6
 
-其余情况，则继续 3 -> 4 -> 5
+其余情况，则继续 4 -> 5
 
 Step定义
 -------
@@ -91,13 +95,9 @@ Step定义
 
 以上定义了一个步骤，要求输入的数据对象结构为：{curr:1,frames:{}}
 
-v1.0.3发布
+v1.1.0发布
 ---------
 
-流程支持暂停与恢复
+改变流程定义方式，由变量定义改为直接通过描述定义
 
-规范接口，双下划线接口，子类及其他类均禁止使用与重写
-
-焦点图demo支持鼠标悬停时，停止自动播放
-
-删除无用文件
+修改demo为新的流程定义方式

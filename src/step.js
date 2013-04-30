@@ -2,16 +2,17 @@ define(function(require,exports,module){
     var Class = require('./util/class');
     var EventPlugin = require('./util/eventPlugin');
     var checkData = require('./util/checkData');
+    var extend = require('./util/extend');
     var Step = Class({
         plugins:[new EventPlugin()],
         construct:function(options){
             options = options || {};
-            if(!options.description){
-                throw new Error('Need a description.');
-            }
+            // if(!options.description){
+            //     throw new Error('Need a description.');
+            // }
             this._data = {
-                __id:Date.now(),
-                description:options.description
+                __id:Date.now()
+                // description:options.description
             };
             this.__struct = this._describeData();
             this.__next = null;
@@ -63,8 +64,13 @@ define(function(require,exports,module){
             isEnd:function(){
                 return this.__end;
             },
-            data:function(){
-                return this._data;
+            data:function(data){
+                if(arguments.length == 0){
+                    return this._data;
+                }
+                else{
+                    extend(this._data,data);
+                }
             },
             getStruct:function(){
                 return this.__struct;

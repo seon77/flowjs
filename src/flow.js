@@ -12,7 +12,8 @@ define(function(require,exports,module){
         plugins:[new EventPlugin()],
         construct:function(options){
             this.__begin = new Begin({description:'Begin',struct:{}});
-            this.__steps = options.steps;
+            this.__steps = options.steps; //step class
+            this.__stepInstances = {}; //step instance
             this.__queue = new Queue();
             this.__timer = null;
             this.__prev = this.__begin;
@@ -29,6 +30,9 @@ define(function(require,exports,module){
             start:Class.abstractMethod,
             go:function(step,data){
                 var _this = this;
+                if(typeof step == 'string'){
+                    step = this.__stepInstances[step];
+                }
                 this.__queue.enqueue({step:step,data:data});
                 if(this.__prev){
                     this.__prev.next(step);
@@ -67,8 +71,12 @@ define(function(require,exports,module){
                 // console.log(Object.keys(this.__working));
                 // console.log(Object.keys(this.__pausing));
             },
-            steps:function(){
+            _steps:function(){
                 return this.__steps;
+            },
+            _addStep:function(name,step){
+                this.__stepInstances[name] = step;
+                step.data({description:name});
             },
             _addInterface:function(name,fn){
                 if(reserve.indexOf(name) != -1){
