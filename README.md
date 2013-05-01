@@ -26,7 +26,13 @@ Flow定义
     this._addStep('step2',new steps.ConsoleStep());
     this._addStep('step3',new steps.ConsoleStep());
     this._addStep('step4',new steps.ConsoleStep());
-    this._addStep('step5',new steps.ConditionStep({
+    this._addStep('step5',new steps.ConditionStep());
+    this._addStep('step6',new steps.ConsoleStep());
+    this.go('step1');
+    this.go('step2');
+    this.go('step3');
+    this.go('step4');
+    this.go('step5',null,{
         cases:{
             '1':function(){
                 _this.go('step1');
@@ -37,13 +43,7 @@ Flow定义
         },defaultCase:function(){
             _this.go('step4');
         }
-    }));
-    this._addStep('step6',new steps.ConsoleStep());
-    this.go('step1');
-    this.go('step2');
-    this.go('step3');
-    this.go('step4');
-    this.go('step5');
+    });
 
 以上流程首先会顺序执行 1 -> 2 -> 3 -> 4 -> 5
 
@@ -95,9 +95,18 @@ Step定义
 
 以上定义了一个步骤，要求输入的数据对象结构为：{curr:1,frames:{}}
 
-v1.1.0发布
+注意事项
 ---------
 
-改变流程定义方式，由变量定义改为直接通过描述定义
+步骤与步骤之间尽可能的减少依赖
 
-修改demo为新的流程定义方式
+每一个步骤只能调用一次callback通知框架步骤完成
+
+v1.1.1发布
+---------
+
+Condition和Input的分支定义修改为在go方法中定义，这样能更清晰的表达出整个流程
+
+修改demo
+
+修改文档

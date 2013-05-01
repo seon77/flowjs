@@ -5,6 +5,7 @@ define(function(require,exports,module){
     var Begin = require('./begin');
     var Step = require('./step');
     var Input = require('./input');
+    var Condition = require('./condition');
     var Queue = require('./util/queue');
     var Data = require('./util/flowData');
     var reserve = [];
@@ -28,10 +29,18 @@ define(function(require,exports,module){
         methods:{
             //初始化流程
             start:Class.abstractMethod,
-            go:function(step,data){
+            go:function(step,data,options){
                 var _this = this;
                 if(typeof step == 'string'){
                     step = this.__stepInstances[step];
+                }
+                if(options){
+                    if(step instanceof Condition){
+                        step.cases(options);
+                    }
+                    if(step instanceof Input){
+                        step.inputs(options);
+                    }
                 }
                 this.__queue.enqueue({step:step,data:data});
                 if(this.__prev){

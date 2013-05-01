@@ -22,7 +22,12 @@ define(function(require, exports, module) {
                 this._addStep('播放到指定的帧数',new steps.Goto());
                 this._addStep('准备显示下一帧',new steps.Next());
                 this._addStep('切换焦点图标题',new steps.ChangeTitle());
-                this._addStep('绑定用户切换事件',new steps.BindEvent({
+                this._addStep('绑定用户切换事件',new steps.BindEvent());
+                this.go('获取焦点图数据');
+                this.go('获取焦点图模板');
+                this.go('渲染焦点图');
+                this.go('获取相关Dom元素');
+                this.go('绑定用户切换事件',null,{
                     inputs:{
                         'click':function(data){
                             _this.go('播放到指定的帧数',data);
@@ -35,12 +40,7 @@ define(function(require, exports, module) {
                             _this.resume();
                         }
                     }
-                }));
-                this.go('获取焦点图数据');
-                this.go('获取焦点图模板');
-                this.go('渲染焦点图');
-                this.go('获取相关Dom元素');
-                this.go('绑定用户切换事件');
+                });
                 this.go('启动焦点图轮播');
                 this.go('切换焦点图');
                 this.go('高亮缩略图');
@@ -50,7 +50,7 @@ define(function(require, exports, module) {
                 this.go('切换焦点图');
                 this._addInterface('goto',function(n){
                     this.go('播放到指定的帧数',{curr:n});
-                    _this.go('切换焦点图');
+                    this.go('切换焦点图');
                 });
             }
         }
