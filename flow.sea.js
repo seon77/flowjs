@@ -72,13 +72,14 @@ define("./util/baseobject", [], function(require, exports, module) {
     _Object.prototype = proto;
     module.exports = _Object;
 });;
-define("./flow", [ "./util/class", "./util/eventPlugin", "./util/extend", "./begin", "./step", "./input", "./util/queue", "./util/flowData" ], function(require, exports, module) {
+define("./flow", [ "./util/class", "./util/eventPlugin", "./util/extend", "./begin", "./step", "./input", "./condition", "./util/queue", "./util/flowData" ], function(require, exports, module) {
     var Class = require("./util/class");
     var EventPlugin = require("./util/eventPlugin");
     var extend = require("./util/extend");
     var Begin = require("./begin");
     var Step = require("./step");
     var Input = require("./input");
+    var Condition = require("./condition");
     var Queue = require("./util/queue");
     var Data = require("./util/flowData");
     var reserve = [];
@@ -90,6 +91,7 @@ define("./flow", [ "./util/class", "./util/eventPlugin", "./util/extend", "./beg
                 struct: {}
             });
             this.__steps = options.steps;
+            this.__stepInstances = {};
             this.__queue = new Queue;
             this.__timer = null;
             this.__prev = this.__begin;
@@ -103,8 +105,19 @@ define("./flow", [ "./util/class", "./util/eventPlugin", "./util/extend", "./beg
         },
         methods: {
             start: Class.abstractMethod,
-            go: function(step, data) {
+            go: function(step, data, options) {
                 var _this = this;
+                if (typeof step == "string") {
+                    step = this.__stepInstances[step];
+                }
+                if (options) {
+                    if (step instanceof Condition) {
+                        step.cases(options);
+                    }
+                    if (step instanceof Input) {
+                        step.inputs(options);
+                    }
+                }
                 this.__queue.enqueue({
                     step: step,
                     data: data
@@ -139,8 +152,14 @@ define("./flow", [ "./util/class", "./util/eventPlugin", "./util/extend", "./beg
                     }
                 }
             },
-            steps: function() {
+            _steps: function() {
                 return this.__steps;
+            },
+            _addStep: function(name, step) {
+                this.__stepInstances[name] = step;
+                step.data({
+                    description: name
+                });
             },
             _addInterface: function(name, fn) {
                 if (reserve.indexOf(name) != -1) {
@@ -313,20 +332,17 @@ define("./begin", [ "./util/class", "./step" ], function(require, exports, modul
     });
     module.exports = Begin;
 });;
-define("./step", [ "./util/class", "./util/eventPlugin", "./util/checkData" ], function(require, exports, module) {
+define("./step", [ "./util/class", "./util/eventPlugin", "./util/checkData", "./util/extend" ], function(require, exports, module) {
     var Class = require("./util/class");
     var EventPlugin = require("./util/eventPlugin");
     var checkData = require("./util/checkData");
+    var extend = require("./util/extend");
     var Step = Class({
         plugins: [ new EventPlugin ],
         construct: function(options) {
             options = options || {};
-            if (!options.description) {
-                throw new Error("Need a description.");
-            }
             this._data = {
-                __id: Date.now(),
-                description: options.description
+                __id: Date.now()
             };
             this.__struct = this._describeData();
             this.__next = null;
@@ -375,8 +391,12 @@ define("./step", [ "./util/class", "./util/eventPlugin", "./util/checkData" ], f
             isEnd: function() {
                 return this.__end;
             },
-            data: function() {
-                return this._data;
+            data: function(data) {
+                if (arguments.length == 0) {
+                    return this._data;
+                } else {
+                    extend(this._data, data);
+                }
             },
             getStruct: function() {
                 return this.__struct;
@@ -483,12 +503,14 @@ define("./util/tool", [], function(require, exports, module) {
         }
     };
 });;
-define("./input", [ "./util/class", "./step" ], function(require, exports, module) {
+define("./input", [ "./util/class", "./step", "./util/extend" ], function(require, exports, module) {
     var Class = require("./util/class");
     var Step = require("./step");
+    var extend = require("./util/extend");
     var Condition = Class({
         extend: Step,
         construct: function(options) {
+            options = options || {};
             this.callsuper(options);
             this._inputs = options.inputs || {};
             this._waiting = false;
@@ -500,8 +522,50 @@ define("./input", [ "./util/class", "./step" ], function(require, exports, modul
                     callback();
                 }
             },
-            inputs: function() {
-                return this._inputs;
+            inputs: function(data) {
+                if (data) {
+                    if (data.inputs) {
+                        extend(this._inputs, data.inputs);
+                    }
+                } else {
+                    return this._inputs;
+                }
+            }
+        }
+    });
+    module.exports = Condition;
+});;
+define("./condition", [ "./util/class", "./step", "./util/extend" ], function(require, exports, module) {
+    var Class = require("./util/class");
+    var Step = require("./step");
+    var extend = require("./util/extend");
+    var Condition = Class({
+        extend: Step,
+        construct: function(options) {
+            options = options || {};
+            this.callsuper(options);
+            this._cases = options.cases || {};
+            this._default = options.defaultCase;
+        },
+        methods: {
+            _select: function(condition) {
+                var fn = this._cases[condition] || this._default;
+                fn();
+            },
+            cases: function(data) {
+                if (data) {
+                    if (data.cases) {
+                        extend(this._cases, data.cases);
+                    }
+                    if (data.defaultCase) {
+                        this._default = data.defaultCase;
+                    }
+                } else {
+                    return {
+                        defaultCase: this._default,
+                        cases: this._cases
+                    };
+                }
             }
         }
     });
@@ -583,29 +647,4 @@ define("./util/flowData", [ "./class", "./tool" ], function(require, exports, mo
         }
     });
     module.exports = FlowData;
-});;
-define("./condition", [ "./util/class", "./step" ], function(require, exports, module) {
-    var Class = require("./util/class");
-    var Step = require("./step");
-    var Condition = Class({
-        extend: Step,
-        construct: function(options) {
-            this.callsuper(options);
-            this._cases = options.cases || {};
-            this._default = options.defaultCase;
-        },
-        methods: {
-            _select: function(condition) {
-                var fn = this._cases[condition] || this._default;
-                fn();
-            },
-            cases: function() {
-                return {
-                    defaultCase: this._default,
-                    cases: this._cases
-                };
-            }
-        }
-    });
-    module.exports = Condition;
 });;

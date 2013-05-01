@@ -224,16 +224,13 @@
     var Class = module["__1"];
     var EventPlugin = module["__4"];
     var checkData = module["__8"];
+    var extend = module["__5"];
     var Step = Class({
         plugins: [ new EventPlugin ],
         construct: function(options) {
             options = options || {};
-            if (!options.description) {
-                throw new Error("Need a description.");
-            }
             this._data = {
-                __id: Date.now(),
-                description: options.description
+                __id: Date.now()
             };
             this.__struct = this._describeData();
             this.__next = null;
@@ -282,8 +279,12 @@
             isEnd: function() {
                 return this.__end;
             },
-            data: function() {
-                return this._data;
+            data: function(data) {
+                if (arguments.length == 0) {
+                    return this._data;
+                } else {
+                    extend(this._data, data);
+                }
             },
             getStruct: function() {
                 return this.__struct;
@@ -319,9 +320,11 @@
 })(_qc);(function (module) {
     var Class = module["__1"];
     var Step = module["__7"];
+    var extend = module["__5"];
     var Condition = Class({
         extend: Step,
         construct: function(options) {
+            options = options || {};
             this.callsuper(options);
             this._inputs = options.inputs || {};
             this._waiting = false;
@@ -333,15 +336,56 @@
                     callback();
                 }
             },
-            inputs: function() {
-                return this._inputs;
+            inputs: function(data) {
+                if (data) {
+                    if (data.inputs) {
+                        extend(this._inputs, data.inputs);
+                    }
+                } else {
+                    return this._inputs;
+                }
             }
         }
     });
     module["__10"]=Condition;
 })(_qc);(function (module) {
     var Class = module["__1"];
-    module["__11"]=Class({
+    var Step = module["__7"];
+    var extend = module["__5"];
+    var Condition = Class({
+        extend: Step,
+        construct: function(options) {
+            options = options || {};
+            this.callsuper(options);
+            this._cases = options.cases || {};
+            this._default = options.defaultCase;
+        },
+        methods: {
+            _select: function(condition) {
+                var fn = this._cases[condition] || this._default;
+                fn();
+            },
+            cases: function(data) {
+                if (data) {
+                    if (data.cases) {
+                        extend(this._cases, data.cases);
+                    }
+                    if (data.defaultCase) {
+                        this._default = data.defaultCase;
+                    }
+                } else {
+                    return {
+                        defaultCase: this._default,
+                        cases: this._cases
+                    };
+                }
+            }
+        }
+    });
+    module["__11"]=Condition;
+})(_qc);(function (module) {
+    var Class = module["__1"];
+    module["__12"]=Class({
         construct: function() {
             this._queue = [];
             this._event = {};
@@ -413,7 +457,7 @@
             }
         }
     });
-    module["__12"]=FlowData;
+    module["__13"]=FlowData;
 })(_qc);(function (module) {
     var Class = module["__1"];
     var EventPlugin = module["__4"];
@@ -421,8 +465,9 @@
     var Begin = module["__6"];
     var Step = module["__7"];
     var Input = module["__10"];
-    var Queue = module["__11"];
-    var Data = module["__12"];
+    var Condition = module["__11"];
+    var Queue = module["__12"];
+    var Data = module["__13"];
     var reserve = [];
     var Flow = Class({
         plugins: [ new EventPlugin ],
@@ -432,6 +477,7 @@
                 struct: {}
             });
             this.__steps = options.steps;
+            this.__stepInstances = {};
             this.__queue = new Queue;
             this.__timer = null;
             this.__prev = this.__begin;
@@ -445,8 +491,19 @@
         },
         methods: {
             start: Class.abstractMethod,
-            go: function(step, data) {
+            go: function(step, data, options) {
                 var _this = this;
+                if (typeof step == "string") {
+                    step = this.__stepInstances[step];
+                }
+                if (options) {
+                    if (step instanceof Condition) {
+                        step.cases(options);
+                    }
+                    if (step instanceof Input) {
+                        step.inputs(options);
+                    }
+                }
                 this.__queue.enqueue({
                     step: step,
                     data: data
@@ -481,8 +538,14 @@
                     }
                 }
             },
-            steps: function() {
+            _steps: function() {
                 return this.__steps;
+            },
+            _addStep: function(name, step) {
+                this.__stepInstances[name] = step;
+                step.data({
+                    description: name
+                });
             },
             _addInterface: function(name, fn) {
                 if (reserve.indexOf(name) != -1) {
@@ -564,35 +627,11 @@
     });
     module["__3"]=Flow;
 })(_qc);(function (module) {
-    var Class = module["__1"];
-    var Step = module["__7"];
-    var Condition = Class({
-        extend: Step,
-        construct: function(options) {
-            this.callsuper(options);
-            this._cases = options.cases || {};
-            this._default = options.defaultCase;
-        },
-        methods: {
-            _select: function(condition) {
-                var fn = this._cases[condition] || this._default;
-                fn();
-            },
-            cases: function() {
-                return {
-                    defaultCase: this._default,
-                    cases: this._cases
-                };
-            }
-        }
-    });
-    module["__13"]=Condition;
-})(_qc);(function (module) {
     window.Flowjs = {
         Class: module["__1"],
         Flow: module["__3"],
         Step: module["__7"],
-        Condition: module["__13"],
+        Condition: module["__11"],
         Input: module["__10"]
     };
 })(_qc);})(this);
