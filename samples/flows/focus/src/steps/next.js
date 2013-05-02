@@ -13,7 +13,6 @@ define(function(require,exports,module){
                 if(curr == total){
                     curr = 0;
                 }
-                console.log(curr);
                 callback(null,{curr:curr});
             },
             _describeData:function(){

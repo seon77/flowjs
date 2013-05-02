@@ -9,22 +9,13 @@ define(function(require,exports,module){
         },
         methods:{
             _process:function(data,callback){
-                var delay = data.delay;
+                var delay = 2000;
                 if(timer){
                     clearTimeout(timer);
                 }
                 timer = setTimeout(function(){
                     callback();
                 },delay);
-            },
-            _describeData:function(){
-                return {
-                    input:{
-                        delay:{
-                            type:'number'
-                        }
-                    }
-                };
             }
         }
     });

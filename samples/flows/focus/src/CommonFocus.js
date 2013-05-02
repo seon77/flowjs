@@ -20,7 +20,7 @@ define(function(require, exports, module) {
                 this._addStep('高亮缩略图',new steps.Highlight());
                 this._addStep('延迟',new steps.Delay());
                 this._addStep('播放到指定的帧数',new steps.Goto());
-                this._addStep('准备显示下一帧',new steps.Next());
+                this._addStep('计算下一帧的帧数',new steps.Next());
                 this._addStep('切换焦点图标题',new steps.ChangeTitle());
                 this._addStep('绑定用户切换事件',new steps.BindEvent());
                 this.go('获取焦点图数据');
@@ -46,7 +46,7 @@ define(function(require, exports, module) {
                 this.go('高亮缩略图');
                 this.go('切换焦点图标题');
                 this.go('延迟');
-                this.go('准备显示下一帧');
+                this.go('计算下一帧的帧数');
                 this.go('切换焦点图');
                 this._addInterface('goto',function(n){
                     this.go('播放到指定的帧数',{curr:n});
