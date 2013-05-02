@@ -1,11 +1,5 @@
 define(function(require,exports,module){
-    var Class = Flowjs.Class;
-    var Step = Flowjs.Input;
-    var ConditionStep = Class({
-        extend:Step,
-        construct:function(options){
-            this.callsuper(options);
-        },
+    module.exports = {
         methods:{
             _process:function(data,callback){
                 var smalls = data.smalls;
@@ -28,21 +22,7 @@ define(function(require,exports,module){
                     });
                 });
                 callback();
-            },
-            _describeData:function(){
-                return {
-                    input:{
-                        frames:{
-                            type:'object'
-                        },
-                        smalls:{
-                            type:'object'
-                        }
-                    }
-                };
             }
         }
-    });
-    
-    module.exports = ConditionStep;
+    };
 });

@@ -58,42 +58,61 @@ step5是一个条件判断的步骤，这里会进行判断
 Step定义
 -------
 
-    var Next = Class({
-        extend:Step,
-        construct:function(options){
-            this.callsuper(options);
-        },
-        methods:{
-            _process:function(data,callback){
-                var total = data.frames.length;
-                var curr = data.curr + 1;
-                if(curr == total){
-                    curr = 0;
-                }
-                console.log(curr);
-                callback(null,{curr:curr});
+基类的定义
+
+    define(function(require,exports,module){
+        var Class = Flowjs.Class;
+        var Step = Flowjs.Step;
+        var Next = Class({
+            extend:Step,
+            construct:function(options){
+                this.callsuper(options);
             },
-            _describeData:function(){
-                return {
-                    input:{
-                        frames:{
-                            type:'object'
+            methods:{
+                _describeData:function(){
+                    return {
+                        input:{
+                            frames:{
+                                type:'object'
+                            },
+                            curr:{
+                                type:'number'
+                            }
                         },
-                        curr:{
-                            type:'number'
+                        output:{
+                            curr:{
+                                type:'number'
+                            }
                         }
-                    },
-                    output:{
-                        curr:{
-                            type:'number'
-                        }
-                    }
-                };
+                    };
+                }
             }
-        }
+        });
+        
+        module.exports = Next;
     });
 
-以上定义了一个步骤，要求输入的数据对象结构为：{curr:1,frames:{}}
+
+
+实现类的定义
+
+    define(function(require,exports,module){
+        module.exports = {
+            methods:{
+                _process:function(data,callback){
+                    var total = data.frames.length;
+                    var curr = data.curr + 1;
+                    if(curr == total){
+                        curr = 0;
+                    }
+                    callback(null,{curr:curr});
+                }
+            }
+        };
+    });
+
+
+以上定义了一个步骤，要求输入的数据对象结构为：{curr:1,frames:{}}；输出的数据对象结果为{curr:2}
 
 注意事项
 ---------
@@ -102,11 +121,19 @@ Step定义
 
 每一个步骤只能调用一次callback通知框架步骤完成
 
-v1.1.1发布
+v1.2.0发布
 ---------
 
-Condition和Input的分支定义修改为在go方法中定义，这样能更清晰的表达出整个流程
+修改流程和步骤的发布方式。
 
-修改demo
+每一个流程发布时，需要连同步骤的基类一块发布。
+
+步骤的基类需要明确定义该步骤的输入与输出。
+
+步骤的实现类，不需要通过Class方法来定义，只需要通过流程的implement方法指定要实现的基类名，和要实现的方法即可。
+
+修改焦点图demo为新的实现方式
 
 修改文档
+
+删除console的demo，暂时只维护一个demo

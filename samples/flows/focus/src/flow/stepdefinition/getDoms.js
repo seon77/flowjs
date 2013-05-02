@@ -1,5 +1,11 @@
 define(function(require,exports,module){
-    module.exports = {
+    var Class = Flowjs.Class;
+    var Step = Flowjs.Step;
+    var FocusData = Class({
+        extend:Step,
+        construct:function(options){
+            this.callsuper(options);
+        },
         methods:{
             _process:function(data,callback){
                 var frames = Q.$('#j-focusBody').down('li');
@@ -8,5 +14,7 @@ define(function(require,exports,module){
                 callback(null,{frames:frames,smalls:smalls,cnt:cnt});
             }
         }
-    };
+    });
+    
+    module.exports = FocusData;
 });

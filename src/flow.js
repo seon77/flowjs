@@ -12,8 +12,9 @@ define(function(require,exports,module){
     var Flow = Class({
         plugins:[new EventPlugin()],
         construct:function(options){
+            options = options || {};
             this.__begin = new Begin({description:'Begin',struct:{}});
-            this.__steps = options.steps; //step class
+            this.__steps = options.steps || {}; //step class
             this.__stepInstances = {}; //step instance
             this.__queue = new Queue();
             this.__timer = null;
@@ -79,6 +80,15 @@ define(function(require,exports,module){
                 //查看是否有泄露
                 // console.log(Object.keys(this.__working));
                 // console.log(Object.keys(this.__pausing));
+            },
+            implement:function(stepName,options){
+                this.__steps[stepName] = Class({
+                    extend:this.constructor.steps[stepName],
+                    construct:options.construct || function(options){
+                        this.callsuper(options);
+                    },
+                    methods:options.methods
+                });
             },
             _steps:function(){
                 return this.__steps;

@@ -1,11 +1,5 @@
 define(function(require,exports,module){
-    var Class = Flowjs.Class;
-    var Step = Flowjs.Step;
-    var FocusData = Class({
-        extend:Step,
-        construct:function(options){
-            this.callsuper(options);
-        },
+    module.exports = {
         methods:{
             _process:function(data,callback){
                 callback(null,{data:{list:[
@@ -22,7 +16,5 @@ define(function(require,exports,module){
                 ]}});
             }
         }
-    });
-    
-    module.exports = FocusData;
+    };
 });
