@@ -86,11 +86,12 @@ define("./flow", [ "./util/class", "./util/eventPlugin", "./util/extend", "./beg
     var Flow = Class({
         plugins: [ new EventPlugin ],
         construct: function(options) {
+            options = options || {};
             this.__begin = new Begin({
                 description: "Begin",
                 struct: {}
             });
-            this.__steps = options.steps;
+            this.__steps = options.steps || {};
             this.__stepInstances = {};
             this.__queue = new Queue;
             this.__timer = null;
@@ -151,6 +152,15 @@ define("./flow", [ "./util/class", "./util/eventPlugin", "./util/extend", "./beg
                         delete this.__pausing[key];
                     }
                 }
+            },
+            implement: function(stepName, options) {
+                this.__steps[stepName] = Class({
+                    extend: this.constructor.steps[stepName],
+                    construct: options.construct || function(options) {
+                        this.callsuper(options);
+                    },
+                    methods: options.methods
+                });
             },
             _steps: function() {
                 return this.__steps;
@@ -503,33 +513,29 @@ define("./util/tool", [], function(require, exports, module) {
         }
     };
 });;
-define("./input", [ "./util/class", "./step", "./util/extend" ], function(require, exports, module) {
+define("./input", [ "./util/class", "./condition", "./util/extend" ], function(require, exports, module) {
     var Class = require("./util/class");
-    var Step = require("./step");
+    var Condition = require("./condition");
     var extend = require("./util/extend");
     var Condition = Class({
-        extend: Step,
+        extend: Condition,
         construct: function(options) {
             options = options || {};
             this.callsuper(options);
             this._inputs = options.inputs || {};
-            this._waiting = false;
+            this._binded = false;
         },
         methods: {
-            _wait: function(callback) {
-                if (!this._waiting) {
-                    this._waiting = true;
+            _once: function(callback) {
+                if (!this._binded) {
+                    this._binded = true;
                     callback();
                 }
             },
             inputs: function(data) {
-                if (data) {
-                    if (data.inputs) {
-                        extend(this._inputs, data.inputs);
-                    }
-                } else {
-                    return this._inputs;
-                }
+                var tmp = {};
+                tmp.cases = data.inputs;
+                return this.cases(tmp);
             }
         }
     });
@@ -548,9 +554,9 @@ define("./condition", [ "./util/class", "./step", "./util/extend" ], function(re
             this._default = options.defaultCase;
         },
         methods: {
-            _select: function(condition) {
+            _select: function(condition, data) {
                 var fn = this._cases[condition] || this._default;
-                fn();
+                fn(data);
             },
             cases: function(data) {
                 if (data) {

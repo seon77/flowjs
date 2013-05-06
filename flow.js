@@ -1,4 +1,4 @@
-(function(global){var _qc={};global.Qiyi=global.Qiyi||{};(function (module) {
+(function(global){var _qc={};(function (module) {
     var _Object = function() {};
     var proto = new Object;
     proto.superclass = Object;
@@ -326,44 +326,13 @@
         construct: function(options) {
             options = options || {};
             this.callsuper(options);
-            this._inputs = options.inputs || {};
-            this._waiting = false;
-        },
-        methods: {
-            _wait: function(callback) {
-                if (!this._waiting) {
-                    this._waiting = true;
-                    callback();
-                }
-            },
-            inputs: function(data) {
-                if (data) {
-                    if (data.inputs) {
-                        extend(this._inputs, data.inputs);
-                    }
-                } else {
-                    return this._inputs;
-                }
-            }
-        }
-    });
-    module["__10"]=Condition;
-})(_qc);(function (module) {
-    var Class = module["__1"];
-    var Step = module["__7"];
-    var extend = module["__5"];
-    var Condition = Class({
-        extend: Step,
-        construct: function(options) {
-            options = options || {};
-            this.callsuper(options);
             this._cases = options.cases || {};
             this._default = options.defaultCase;
         },
         methods: {
-            _select: function(condition) {
+            _select: function(condition, data) {
                 var fn = this._cases[condition] || this._default;
-                fn();
+                fn(data);
             },
             cases: function(data) {
                 if (data) {
@@ -383,6 +352,33 @@
         }
     });
     module["__11"]=Condition;
+})(_qc);(function (module) {
+    var Class = module["__1"];
+    var Condition = module["__11"];
+    var extend = module["__5"];
+    var Condition = Class({
+        extend: Condition,
+        construct: function(options) {
+            options = options || {};
+            this.callsuper(options);
+            this._inputs = options.inputs || {};
+            this._binded = false;
+        },
+        methods: {
+            _once: function(callback) {
+                if (!this._binded) {
+                    this._binded = true;
+                    callback();
+                }
+            },
+            inputs: function(data) {
+                var tmp = {};
+                tmp.cases = data.inputs;
+                return this.cases(tmp);
+            }
+        }
+    });
+    module["__10"]=Condition;
 })(_qc);(function (module) {
     var Class = module["__1"];
     module["__12"]=Class({
@@ -472,11 +468,12 @@
     var Flow = Class({
         plugins: [ new EventPlugin ],
         construct: function(options) {
+            options = options || {};
             this.__begin = new Begin({
                 description: "Begin",
                 struct: {}
             });
-            this.__steps = options.steps;
+            this.__steps = options.steps || {};
             this.__stepInstances = {};
             this.__queue = new Queue;
             this.__timer = null;
@@ -537,6 +534,15 @@
                         delete this.__pausing[key];
                     }
                 }
+            },
+            implement: function(stepName, options) {
+                this.__steps[stepName] = Class({
+                    extend: this.constructor.steps[stepName],
+                    construct: options.construct || function(options) {
+                        this.callsuper(options);
+                    },
+                    methods: options.methods
+                });
             },
             _steps: function() {
                 return this.__steps;
