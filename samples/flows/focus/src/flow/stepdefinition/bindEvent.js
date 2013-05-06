@@ -10,12 +10,8 @@ define(function(require,exports,module){
             _describeData:function(){
                 return {
                     input:{
-                        frames:{
-                            type:'object'
-                        },
-                        smalls:{
-                            type:'object'
-                        }
+                        frames:{type:'object'},
+                        smalls:{type:'object'}
                     }
                 };
             }

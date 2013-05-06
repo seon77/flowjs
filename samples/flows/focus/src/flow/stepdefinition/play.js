@@ -10,12 +10,9 @@ define(function(require,exports,module){
             _describeData:function(){
                 return {
                     input:{
-                        curr:{
-                            type:'number'
-                        },
-                        frames:{
-                            type:'object'
-                        }
+                        prev:{type:'number'},
+                        curr:{type:'number'},
+                        frames:{type:'object'}
                     }
                 };
             }

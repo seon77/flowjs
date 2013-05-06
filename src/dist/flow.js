@@ -472,11 +472,12 @@
     var Flow = Class({
         plugins: [ new EventPlugin ],
         construct: function(options) {
+            options = options || {};
             this.__begin = new Begin({
                 description: "Begin",
                 struct: {}
             });
-            this.__steps = options.steps;
+            this.__steps = options.steps || {};
             this.__stepInstances = {};
             this.__queue = new Queue;
             this.__timer = null;
@@ -537,6 +538,15 @@
                         delete this.__pausing[key];
                     }
                 }
+            },
+            implement: function(stepName, options) {
+                this.__steps[stepName] = Class({
+                    extend: this.constructor.steps[stepName],
+                    construct: options.construct || function(options) {
+                        this.callsuper(options);
+                    },
+                    methods: options.methods
+                });
             },
             _steps: function() {
                 return this.__steps;

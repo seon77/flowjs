@@ -10,14 +10,12 @@ define(function(require,exports,module){
             _describeData:function(){
                 return {
                     input:{
-                        curr:{
-                            type:'number'
-                        }
+                        curr:{type:'number'},
+                        goto:{type:'number'}
                     },
                     output:{
-                        curr:{
-                            type:'number'
-                        }
+                        curr:{type:'number'},
+                        prev:{type:'number'}
                     }
                 };
             }

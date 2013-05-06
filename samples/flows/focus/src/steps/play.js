@@ -3,13 +3,18 @@ define(function(require,exports,module){
         methods:{
             _process:function(data,callback){
                 var curr = data.curr;
-                var frames = data.frames;
-                frames.css('zIndex','');
-                frames.css('opacity',0);
-                frames.hide();
-                Q.$(frames[curr]).show();    
-                Q.$(frames[curr]).css('zIndex',1);
-                Q.$(frames[curr]).css('opacity',1);
+                var prev = data.prev;
+                if(curr != prev){
+                    var frames = data.frames;
+                    curr = Q.$(frames[curr]);
+                    prev = Q.$(frames[prev]);
+                    prev.css('zIndex','');
+                    prev.css('opacity',0);
+                    prev.hide();
+                    curr.show();    
+                    curr.css('zIndex',1);
+                    curr.css('opacity',1);
+                }
                 callback();
             }
         }

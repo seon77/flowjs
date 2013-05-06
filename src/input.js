@@ -1,31 +1,27 @@
 define(function(require,exports,module){
     var Class = require('./util/class');
-    var Step = require('./step');
+    var Condition = require('./condition');
     var extend = require('./util/extend');
     var Condition = Class({
-        extend:Step,
+        extend:Condition,
         construct:function(options){
             options = options || {};
             this.callsuper(options);
             this._inputs = options.inputs || {};
-            this._waiting = false;
+            this._binded = false;
         },
         methods:{
-            _wait:function(callback){
-                if(!this._waiting){
-                    this._waiting = true;
+            //为了该步骤可重入，并且不会重复绑定事件
+            _once:function(callback){
+                if(!this._binded){
+                    this._binded = true;
                     callback();
                 }
             },
             inputs:function(data){
-                if(data){
-                    if(data.inputs){
-                        extend(this._inputs,data.inputs);
-                    }
-                }
-                else{
-                    return this._inputs;
-                }
+                var tmp = {};
+                tmp.cases = data.inputs;
+                return this.cases(tmp);
             }
         }
     });

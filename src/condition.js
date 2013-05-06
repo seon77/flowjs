@@ -11,9 +11,9 @@ define(function(require,exports,module){
             this._default = options.defaultCase;
         },
         methods:{
-            _select:function(condition){
+            _select:function(condition,data){
                 var fn = this._cases[condition] || this._default;
-                fn();
+                fn(data);
             },
             cases:function(data){
                 if(data){

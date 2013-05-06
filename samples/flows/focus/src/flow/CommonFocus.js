@@ -65,7 +65,7 @@ define(function(require, exports, module) {
                 this.go('计算下一帧的帧数');
                 this.go('切换焦点图');
                 this._addInterface('goto',function(n){
-                    this.go('播放到指定的帧数',{curr:n});
+                    this.go('播放到指定的帧数',{goto:n});
                     this.go('切换焦点图');
                 });
             }

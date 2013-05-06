@@ -3,11 +3,12 @@ define(function(require,exports,module){
         methods:{
             _process:function(data,callback){
                 var total = data.frames.length;
+                var prev = data.curr;
                 var curr = data.curr + 1;
                 if(curr == total){
                     curr = 0;
                 }
-                callback(null,{curr:curr});
+                callback(null,{curr:curr,prev:prev});
             }
         }
     };

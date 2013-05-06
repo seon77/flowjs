@@ -5,11 +5,6 @@ define(function(require,exports,module){
         extend:Step,
         construct:function(options){
             this.callsuper(options);
-        },
-        methods:{
-            _process:function(data,callback){
-                callback(null,{template:''});
-            }
         }
     });
     
