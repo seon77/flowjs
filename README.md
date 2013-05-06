@@ -127,3 +127,5 @@ v1.2.1发布
 Input步骤从Condition步骤继承
 
 _wait方法修改为_once方法，表示仅绑定一次事件
+
+焦点图demo升级
