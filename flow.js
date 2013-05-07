@@ -490,32 +490,39 @@
             start: Class.abstractMethod,
             go: function(step, data, options) {
                 var _this = this;
-                if (typeof step == "string") {
-                    step = this.__stepInstances[step];
-                }
-                if (options) {
-                    if (step instanceof Condition) {
-                        step.cases(options);
-                    }
-                    if (step instanceof Input) {
-                        step.inputs(options);
-                    }
-                }
-                this.__queue.enqueue({
-                    step: step,
-                    data: data
-                });
-                if (this.__prev) {
-                    this.__prev.next(step);
-                }
-                this.__prev = step;
                 if (this.__timer) {
                     clearTimeout(this.__timer);
                 }
-                this.__timer = setTimeout(function() {
-                    step.end();
-                    _this.__start();
-                }, 0);
+                if (typeof step == "string") {
+                    var stepName = step;
+                    step = this.__stepInstances[step];
+                }
+                if (step) {
+                    if (options) {
+                        if (step instanceof Condition) {
+                            step.cases(options);
+                        }
+                        if (step instanceof Input) {
+                            step.inputs(options);
+                        }
+                    }
+                    this.__queue.enqueue({
+                        step: step,
+                        data: data
+                    });
+                    if (this.__prev) {
+                        this.__prev.next(step);
+                    }
+                    this.__prev = step;
+                    this.__timer = setTimeout(function() {
+                        step.end();
+                        _this.__start();
+                    }, 0);
+                } else {
+                    this.__timer = setTimeout(function() {
+                        _this.__start();
+                    }, 0);
+                }
             },
             pause: function() {
                 for (var key in this.__working) {
@@ -544,6 +551,7 @@
                     methods: options.methods
                 });
             },
+            sync: function(callback) {},
             _steps: function() {
                 return this.__steps;
             },
