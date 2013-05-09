@@ -3,6 +3,7 @@ define(function(require,exports,module){
     var EventPlugin = require('./util/eventPlugin');
     var checkData = require('./util/checkData');
     var extend = require('./util/extend');
+    var tool = require('./util/tool');
     var Step = Class({
         plugins:[new EventPlugin()],
         construct:function(options){
@@ -86,9 +87,11 @@ define(function(require,exports,module){
                 }
             },
             __checkInput:function(data){
+                tool.log('Check','input data for',this._data.description);
                 return checkData.check(this.__struct.input,data);
             },
             __checkOutput:function(data){
+                tool.log('Check','output data for',this._data.description);
                 return checkData.check(this.__struct.output,data);
             }
         }
