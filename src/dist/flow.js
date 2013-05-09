@@ -143,6 +143,11 @@
     module["__9"]={
         isArray: Array.isArray || function(arg) {
             return Object.prototype.toString.call(arg) == "[object Array]";
+        },
+        log: function() {
+            if (window.console) {
+                console.log.apply(console, arguments);
+            }
         }
     };
 })(_qc);(function (module) {
@@ -225,6 +230,7 @@
     var EventPlugin = module["__4"];
     var checkData = module["__8"];
     var extend = module["__5"];
+    var tool = module["__9"];
     var Step = Class({
         plugins: [ new EventPlugin ],
         construct: function(options) {
@@ -299,9 +305,11 @@
                 }
             },
             __checkInput: function(data) {
+                tool.log("Check", "input data for", this._data.description);
                 return checkData.check(this.__struct.input, data);
             },
             __checkOutput: function(data) {
+                tool.log("Check", "output data for", this._data.description);
                 return checkData.check(this.__struct.output, data);
             }
         }

@@ -350,11 +350,12 @@ define("./begin", [ "./util/class", "./step" ], function(require, exports, modul
     });
     module.exports = Begin;
 });;
-define("./step", [ "./util/class", "./util/eventPlugin", "./util/checkData", "./util/extend" ], function(require, exports, module) {
+define("./step", [ "./util/class", "./util/eventPlugin", "./util/checkData", "./util/extend", "./util/tool" ], function(require, exports, module) {
     var Class = require("./util/class");
     var EventPlugin = require("./util/eventPlugin");
     var checkData = require("./util/checkData");
     var extend = require("./util/extend");
+    var tool = require("./util/tool");
     var Step = Class({
         plugins: [ new EventPlugin ],
         construct: function(options) {
@@ -429,9 +430,11 @@ define("./step", [ "./util/class", "./util/eventPlugin", "./util/checkData", "./
                 }
             },
             __checkInput: function(data) {
+                tool.log("Check", "input data for", this._data.description);
                 return checkData.check(this.__struct.input, data);
             },
             __checkOutput: function(data) {
+                tool.log("Check", "output data for", this._data.description);
                 return checkData.check(this.__struct.output, data);
             }
         }
@@ -518,6 +521,11 @@ define("./util/tool", [], function(require, exports, module) {
     module.exports = {
         isArray: Array.isArray || function(arg) {
             return Object.prototype.toString.call(arg) == "[object Array]";
+        },
+        log: function() {
+            if (window.console) {
+                console.log.apply(console, arguments);
+            }
         }
     };
 });;
