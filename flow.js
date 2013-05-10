@@ -236,7 +236,8 @@
         construct: function(options) {
             options = options || {};
             this._data = {
-                __id: Date.now()
+                __id: Date.now(),
+                description: options.description
             };
             this.__struct = this._describeData();
             this.__next = null;
@@ -551,23 +552,23 @@
                 }
             },
             implement: function(stepName, options) {
-                this.__steps[stepName] = Class({
-                    extend: this.constructor.steps[stepName],
+                var StepClass = Class({
+                    extend: this.__steps[stepName],
                     construct: options.construct || function(options) {
                         this.callsuper(options);
                     },
                     methods: options.methods
+                });
+                this.__stepInstances[stepName] = new StepClass({
+                    description: stepName
                 });
             },
             sync: function(callback) {},
             _steps: function() {
                 return this.__steps;
             },
-            _addStep: function(name, step) {
-                this.__stepInstances[name] = step;
-                step.data({
-                    description: name
-                });
+            _addStep: function(name, StepClass) {
+                this.__steps[name] = StepClass;
             },
             _addInterface: function(name, fn) {
                 if (reserve.indexOf(name) != -1) {
@@ -650,7 +651,7 @@
     module["__3"]=Flow;
 })(_qc);(function (module) {
     window.Flowjs = {
-        V: "1.2.3",
+        V: "1.2.4",
         Class: module["__1"],
         Flow: module["__3"],
         Step: module["__7"],
