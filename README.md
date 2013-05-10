@@ -20,29 +20,45 @@ Step类需要明确的定义本步骤所需要的参数。
 Flow定义
 -------
 
-    vvar _this = this;
-    var steps = this._steps();
-    this._addStep('step1',new steps.ConsoleStep());
-    this._addStep('step2',new steps.ConsoleStep());
-    this._addStep('step3',new steps.ConsoleStep());
-    this._addStep('step4',new steps.ConsoleStep());
-    this._addStep('step5',new steps.ConditionStep());
-    this._addStep('step6',new steps.ConsoleStep());
-    this.go('step1');
-    this.go('step2');
-    this.go('step3');
-    this.go('step4');
-    this.go('step5',null,{
-        cases:{
-            '1':function(){
-                _this.go('step1');
+    define(function(require, exports, module) {
+        var Class = Flowjs.Class;
+        var Flow = Flowjs.Flow;
+        var CommonFocusFlow = Class({
+            extend:Flow,
+            construct:function(options){
+                this.callsuper(options);
+                this._addStep('step1',require('./stepdefinition/step1'));
+                this._addStep('step2',require('./stepdefinition/step2'));
+                this._addStep('step3',require('./stepdefinition/step3'));
+                this._addStep('step4',require('./stepdefinition/step4'));
+                this._addStep('step5',require('./stepdefinition/step5'));
+                this._addStep('step6',require('./stepdefinition/step6'));
             },
-            '2':function(){
-                _this.go('step6');
+            methods:{
+                //初始化流程
+                start:function(){
+                    var _this = this;
+                    this.go('step1');
+                    this.go('step2');
+                    this.go('step3');
+                    this.go('step4');
+                    this.go('step5',null,{
+                        cases:{
+                            '1':function(){
+                                _this.go('step1');
+                            },
+                            '2':function(){
+                                _this.go('step6');
+                            }
+                        },defaultCase:function(){
+                            _this.go('step4');
+                        }
+                    });
+                }
             }
-        },defaultCase:function(){
-            _this.go('step4');
-        }
+        });
+
+        module.exports = CommonFocusFlow;
     });
 
 以上流程首先会顺序执行 1 -> 2 -> 3 -> 4 -> 5
@@ -121,7 +137,9 @@ Step定义
 
 每一个步骤只能调用一次callback通知框架步骤完成
 
-v1.2.3发布
+v1.2.4发布
 ---------
 
-检查数据格式时增加log信息，方便排查问题
+进一步简化流程的定义，具体定义方式见上面的描述
+
+简化实例化流程的方式

@@ -5,40 +5,23 @@ define(function(require, exports, module) {
         extend:Flow,
         construct:function(options){
             this.callsuper(options);
-        },
-        statics:{
-            steps:{
-                GetData:require('./stepdefinition/getData'),
-                GetTemplate:require('./stepdefinition/getTemplate'),
-                Render:require('./stepdefinition/render'),
-                GetDoms:require('./stepdefinition/getDoms'),
-                Start:require('./stepdefinition/start'),
-                Play:require('./stepdefinition/play'),
-                Highlight:require('./stepdefinition/highlight'),
-                Delay:require('./stepdefinition/delay'),
-                Goto:require('./stepdefinition/goto'),
-                Next:require('./stepdefinition/next'),
-                ChangeTitle:require('./stepdefinition/changeTitle'),
-                BindEvent:require('./stepdefinition/bindEvent')
-            }
+            this._addStep('获取焦点图数据',require('./stepdefinition/getData'));
+            this._addStep('获取焦点图模板',require('./stepdefinition/getTemplate'));
+            this._addStep('渲染焦点图',require('./stepdefinition/render'));
+            this._addStep('获取相关Dom元素',require('./stepdefinition/getDoms'));
+            this._addStep('启动焦点图轮播',require('./stepdefinition/start'));
+            this._addStep('切换焦点图',require('./stepdefinition/play'));
+            this._addStep('高亮缩略图',require('./stepdefinition/highlight'));
+            this._addStep('延迟',require('./stepdefinition/delay'));
+            this._addStep('播放到指定的帧数',require('./stepdefinition/goto'));
+            this._addStep('计算下一帧的帧数',require('./stepdefinition/next'));
+            this._addStep('切换焦点图标题',require('./stepdefinition/changeTitle'));
+            this._addStep('绑定用户切换事件',require('./stepdefinition/bindEvent'));
         },
         methods:{
             //初始化流程
             start:function(){
                 var _this = this;
-                var steps = this._steps();
-                this._addStep('获取焦点图数据',new steps.GetData());
-                this._addStep('获取焦点图模板',new steps.GetTemplate());
-                this._addStep('渲染焦点图',new steps.Render());
-                this._addStep('获取相关Dom元素',new steps.GetDoms());
-                this._addStep('启动焦点图轮播',new steps.Start());
-                this._addStep('切换焦点图',new steps.Play());
-                this._addStep('高亮缩略图',new steps.Highlight());
-                this._addStep('延迟',new steps.Delay());
-                this._addStep('播放到指定的帧数',new steps.Goto());
-                this._addStep('计算下一帧的帧数',new steps.Next());
-                this._addStep('切换焦点图标题',new steps.ChangeTitle());
-                this._addStep('绑定用户切换事件',new steps.BindEvent());
                 this.go('获取焦点图数据');
                 this.go('获取焦点图模板');
                 this.go('渲染焦点图');

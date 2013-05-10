@@ -5,18 +5,18 @@ define(function(require, exports, module) {
     var flow = new Flow();
 
     var steps = {
-        GetData:require('../src/steps/getData'),
-        GetTemplate:require('../src/steps/getTemplate'),
-        Render:require('../src/steps/render'),
-        Start:require('../src/steps/start'),
-        Play:require('../src/steps/play'),
-        GetDoms:require('../src/steps/getDoms'),
-        Highlight:require('../src/steps/highlight'),
-        Delay:require('../src/steps/delay'),
-        BindEvent:require('../src/steps/bindEvent'),
-        Next:require('../src/steps/next'),
-        ChangeTitle:require('../src/steps/changeTitle'),
-        Goto:require('../src/steps/goto')
+        '获取焦点图数据':require('../src/steps/getData'),
+        '获取焦点图模板':require('../src/steps/getTemplate'),
+        '渲染焦点图':require('../src/steps/render'),
+        '启动焦点图轮播':require('../src/steps/start'),
+        '切换焦点图':require('../src/steps/play'),
+        '获取相关Dom元素':require('../src/steps/getDoms'),
+        '高亮缩略图':require('../src/steps/highlight'),
+        '延迟':require('../src/steps/delay'),
+        '绑定用户切换事件':require('../src/steps/bindEvent'),
+        '计算下一帧的帧数':require('../src/steps/next'),
+        '切换焦点图标题':require('../src/steps/changeTitle'),
+        '播放到指定的帧数':require('../src/steps/goto')
     };
 
     for (var stepName in steps){

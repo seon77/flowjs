@@ -12,8 +12,8 @@ define(function(require,exports,module){
             //     throw new Error('Need a description.');
             // }
             this._data = {
-                __id:Date.now()
-                // description:options.description
+                __id:Date.now(),
+                description:options.description
             };
             this.__struct = this._describeData();
             this.__next = null;

@@ -92,13 +92,14 @@ define(function(require,exports,module){
                 // console.log(Object.keys(this.__pausing));
             },
             implement:function(stepName,options){
-                this.__steps[stepName] = Class({
-                    extend:this.constructor.steps[stepName],
+                var StepClass = Class({
+                    extend:this.__steps[stepName],
                     construct:options.construct || function(options){
                         this.callsuper(options);
                     },
                     methods:options.methods
                 });
+                this.__stepInstances[stepName] = new StepClass({description:stepName});
             },
             sync:function(callback){
                 
@@ -106,9 +107,8 @@ define(function(require,exports,module){
             _steps:function(){
                 return this.__steps;
             },
-            _addStep:function(name,step){
-                this.__stepInstances[name] = step;
-                step.data({description:name});
+            _addStep:function(name,StepClass){
+                this.__steps[name] = StepClass;
             },
             _addInterface:function(name,fn){
                 if(reserve.indexOf(name) != -1){
