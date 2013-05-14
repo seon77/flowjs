@@ -529,6 +529,7 @@
                     }, 0);
                 } else {
                     this.__timer = setTimeout(function() {
+                        _this.__prev.end();
                         _this.__start();
                     }, 0);
                 }
@@ -651,7 +652,7 @@
     module["__3"]=Flow;
 })(_qc);(function (module) {
     window.Flowjs = {
-        V: "1.2.4",
+        V: "1.2.5",
         Class: module["__1"],
         Flow: module["__3"],
         Step: module["__7"],
