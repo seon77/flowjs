@@ -41,7 +41,7 @@ define(function (require, exports, module) {
                         }
                     }
                 } else {
-                    result[dataNames.toString()] = this_data[dataNames.toString()];
+                    result[dataNames.toString()] = this._data[dataNames.toString()];
                 }
                 return result;
             },

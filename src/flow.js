@@ -30,7 +30,17 @@ define(function(require,exports,module){
         methods:{
             //初始化流程
             start:Class.abstractMethod,
-            go:function(step,data,options){
+            implement:function(stepName,options){
+                var StepClass = Class({
+                    extend:this.__steps[stepName],
+                    construct:options.construct || function(options){
+                        this.callsuper(options);
+                    },
+                    methods:options.methods
+                });
+                this.__stepInstances[stepName] = new StepClass({description:stepName});
+            },
+            _go:function(step,data,options){
                 var _this = this;
                 if(this.__timer){
                     clearTimeout(this.__timer);
@@ -54,11 +64,23 @@ define(function(require,exports,module){
                         this.__prev.next(step);
                     }
                     this.__prev = step;
-                    this.__timer = setTimeout(function(){
-                        //执行到此，说明一个流程链已经完成，当前步骤为该流程链的末端，不允许再有下一步了
-                        step.end();
-                        _this.__start();
-                    },0);
+                    if(this.__sync){
+                        var item = this.__queue.dequeue();
+                        var stepData = this.__getStepData(item.step);
+                        extend(stepData,item.data);
+                        this.__process(item.step,stepData);
+                        this.__timer = setTimeout(function(){
+                            //执行到此，说明一个流程链已经完成，当前步骤为该流程链的末端，不允许再有下一步了
+                            step.end();
+                        },0);
+                    }
+                    else{
+                        this.__timer = setTimeout(function(){
+                            //执行到此，说明一个流程链已经完成，当前步骤为该流程链的末端，不允许再有下一步了
+                            step.end();
+                            _this.__start();
+                        },0);
+                    }
                 }
                 //未实现的步骤直接跳过
                 else{
@@ -68,7 +90,7 @@ define(function(require,exports,module){
                     },0);
                 }
             },
-            pause:function(){
+            _pause:function(){
                 for(var key in this.__working){
                     if(this.__working.hasOwnProperty(key)){
                         this.__working[key].pause();
@@ -80,7 +102,7 @@ define(function(require,exports,module){
                 // console.log(Object.keys(this.__working));
                 // console.log(Object.keys(this.__pausing));
             },
-            resume:function(){
+            _resume:function(){
                 for(var key in this.__pausing){
                     if(this.__pausing.hasOwnProperty(key)){
                         this.__pausing[key].resume();
@@ -92,18 +114,10 @@ define(function(require,exports,module){
                 // console.log(Object.keys(this.__working));
                 // console.log(Object.keys(this.__pausing));
             },
-            implement:function(stepName,options){
-                var StepClass = Class({
-                    extend:this.__steps[stepName],
-                    construct:options.construct || function(options){
-                        this.callsuper(options);
-                    },
-                    methods:options.methods
-                });
-                this.__stepInstances[stepName] = new StepClass({description:stepName});
-            },
-            sync:function(callback){
-                
+            _sync:function(callback){
+                this.__sync = true;
+                callback();
+                this.__sync = false;
             },
             _steps:function(){
                 return this.__steps;
@@ -117,6 +131,9 @@ define(function(require,exports,module){
                 }
                 this[name] = fn;
                 this.__interfaces[name] = fn;
+            },
+            _getData:function(keys){
+                return this.__data.getData(keys);
             },
             __start:function(){
                 var item = this.__queue.dequeue();
@@ -133,9 +150,12 @@ define(function(require,exports,module){
                     if(result){
                         this.__saveData(result);
                     }
-                    var next = this.__getNext(step);
-                    if(next){
-                        this.__process(next.step,next.data);
+                    //在同步状态下，由go来执行下一步，而不需要_process来递归执行下一步
+                    if(!this.__sync){
+                        var next = this.__getNext(step);
+                        if(next){
+                            this.__process(next.step,next.data);
+                        }
                     }
                 });
             },

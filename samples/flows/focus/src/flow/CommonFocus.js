@@ -22,34 +22,37 @@ define(function(require, exports, module) {
             //初始化流程
             start:function(){
                 var _this = this;
-                this.go('获取焦点图数据');
-                this.go('获取焦点图模板');
-                this.go('渲染焦点图');
-                this.go('获取相关Dom元素');
-                this.go('绑定用户切换事件',null,{
+                this._go('获取焦点图数据');
+                this._go('获取焦点图模板');
+                this._go('渲染焦点图');
+                this._go('获取相关Dom元素');
+                this._go('绑定用户切换事件',null,{
                     inputs:{
                         'click':function(data){
-                            _this.go('播放到指定的帧数',data);
-                            _this.go('切换焦点图');
+                            _this._go('播放到指定的帧数',data);
+                            _this._go('切换焦点图');
                         },
                         'mouseonfocus':function(){
-                            _this.pause();
+                            _this._pause();
                         },
                         'mouseoutfocus':function(){
-                            _this.resume();
+                            _this._resume();
                         }
                     }
                 });
-                this.go('启动焦点图轮播');
-                this.go('切换焦点图');
-                this.go('高亮缩略图');
-                this.go('切换焦点图标题');
-                this.go('延迟');
-                this.go('计算下一帧的帧数');
-                this.go('切换焦点图');
+                this._go('启动焦点图轮播');
+                this._go('切换焦点图');
+                this._go('高亮缩略图');
+                this._go('切换焦点图标题');
+                this._go('延迟');
+                this._go('计算下一帧的帧数');
+                this._go('切换焦点图');
                 this._addInterface('goto',function(n){
-                    this.go('播放到指定的帧数',{goto:n});
-                    this.go('切换焦点图');
+                    this._go('播放到指定的帧数',{goto:n});
+                    this._go('切换焦点图');
+                });
+                this._addInterface('curr',function(n){
+                    return this._getData('curr').curr;
                 });
             }
         }
