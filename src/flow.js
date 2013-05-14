@@ -60,9 +60,10 @@ define(function(require,exports,module){
                         _this.__start();
                     },0);
                 }
-                //为实现的步骤直接跳过
+                //未实现的步骤直接跳过
                 else{
                     this.__timer = setTimeout(function(){
+                        _this.__prev.end();
                         _this.__start();
                     },0);
                 }
