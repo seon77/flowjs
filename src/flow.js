@@ -98,6 +98,7 @@ define(function(require,exports,module){
                         delete this.__working[key];
                     }
                 }
+                this.__queue.clear();
                 //查看是否有泄露
                 // console.log(Object.keys(this.__working));
                 // console.log(Object.keys(this.__pausing));

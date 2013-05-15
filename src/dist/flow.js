@@ -570,6 +570,7 @@
                         delete this.__working[key];
                     }
                 }
+                this.__queue.clear();
             },
             _resume: function() {
                 for (var key in this.__pausing) {

@@ -36,7 +36,7 @@ define(function(require, exports, module) {
                             _this._pause();
                         },
                         'mouseoutfocus':function(){
-                            _this._resume();
+                            _this._go('延迟');
                         }
                     }
                 });
