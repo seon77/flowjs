@@ -671,7 +671,7 @@
     module["__3"]=Flow;
 })(_qc);(function (module) {
     window.Flowjs = {
-        V: "1.2.5",
+        V: "1.2.6",
         Class: module["__1"],
         Flow: module["__3"],
         Step: module["__7"],
