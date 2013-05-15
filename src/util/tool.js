@@ -12,7 +12,14 @@ define(function (require, exports, module) {
         },
         log:function(){
             if(window.console){
-                console.log.apply(console,arguments);
+                if(console.log.apply){
+                    console.log.apply(console,arguments);
+                }
+                else{
+                    var args = Array.prototype.slice.apply(arguments,0);
+                    var str = args.join(' ');
+                    console.log(str);
+                }
             }
         }
     }
