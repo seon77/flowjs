@@ -107,7 +107,19 @@ define("./flow", [ "./util/class", "./util/eventPlugin", "./util/extend", "./beg
         },
         methods: {
             start: Class.abstractMethod,
-            go: function(step, data, options) {
+            implement: function(stepName, options) {
+                var StepClass = Class({
+                    extend: this.__steps[stepName],
+                    construct: options.construct || function(options) {
+                        this.callsuper(options);
+                    },
+                    methods: options.methods
+                });
+                this.__stepInstances[stepName] = new StepClass({
+                    description: stepName
+                });
+            },
+            _go: function(step, data, options) {
                 var _this = this;
                 if (this.__timer) {
                     clearTimeout(this.__timer);
@@ -133,10 +145,20 @@ define("./flow", [ "./util/class", "./util/eventPlugin", "./util/extend", "./beg
                         this.__prev.next(step);
                     }
                     this.__prev = step;
-                    this.__timer = setTimeout(function() {
-                        step.end();
-                        _this.__start();
-                    }, 0);
+                    if (this.__sync) {
+                        var item = this.__queue.dequeue();
+                        var stepData = this.__getStepData(item.step);
+                        extend(stepData, item.data);
+                        this.__process(item.step, stepData);
+                        this.__timer = setTimeout(function() {
+                            step.end();
+                        }, 0);
+                    } else {
+                        this.__timer = setTimeout(function() {
+                            step.end();
+                            _this.__start();
+                        }, 0);
+                    }
                 } else {
                     this.__timer = setTimeout(function() {
                         _this.__prev.end();
@@ -144,7 +166,7 @@ define("./flow", [ "./util/class", "./util/eventPlugin", "./util/extend", "./beg
                     }, 0);
                 }
             },
-            pause: function() {
+            _pause: function() {
                 for (var key in this.__working) {
                     if (this.__working.hasOwnProperty(key)) {
                         this.__working[key].pause();
@@ -153,7 +175,7 @@ define("./flow", [ "./util/class", "./util/eventPlugin", "./util/extend", "./beg
                     }
                 }
             },
-            resume: function() {
+            _resume: function() {
                 for (var key in this.__pausing) {
                     if (this.__pausing.hasOwnProperty(key)) {
                         this.__pausing[key].resume();
@@ -162,19 +184,11 @@ define("./flow", [ "./util/class", "./util/eventPlugin", "./util/extend", "./beg
                     }
                 }
             },
-            implement: function(stepName, options) {
-                var StepClass = Class({
-                    extend: this.__steps[stepName],
-                    construct: options.construct || function(options) {
-                        this.callsuper(options);
-                    },
-                    methods: options.methods
-                });
-                this.__stepInstances[stepName] = new StepClass({
-                    description: stepName
-                });
+            _sync: function(callback) {
+                this.__sync = true;
+                callback();
+                this.__sync = false;
             },
-            sync: function(callback) {},
             _steps: function() {
                 return this.__steps;
             },
@@ -187,6 +201,9 @@ define("./flow", [ "./util/class", "./util/eventPlugin", "./util/extend", "./beg
                 }
                 this[name] = fn;
                 this.__interfaces[name] = fn;
+            },
+            _getData: function(keys) {
+                return this.__data.getData(keys);
             },
             __start: function() {
                 var item = this.__queue.dequeue();
@@ -203,9 +220,11 @@ define("./flow", [ "./util/class", "./util/eventPlugin", "./util/extend", "./beg
                     if (result) {
                         this.__saveData(result);
                     }
-                    var next = this.__getNext(step);
-                    if (next) {
-                        this.__process(next.step, next.data);
+                    if (!this.__sync) {
+                        var next = this.__getNext(step);
+                        if (next) {
+                            this.__process(next.step, next.data);
+                        }
                     }
                 });
             },
@@ -661,7 +680,7 @@ define("./util/flowData", [ "./class", "./tool" ], function(require, exports, mo
                         }
                     }
                 } else {
-                    result[dataNames.toString()] = this_data[dataNames.toString()];
+                    result[dataNames.toString()] = this._data[dataNames.toString()];
                 }
                 return result;
             },
