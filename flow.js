@@ -149,7 +149,7 @@
                 if (console.log.apply) {
                     console.log.apply(console, arguments);
                 } else {
-                    var args = Array.prototype.slice.apply(arguments, 0);
+                    var args = Array.prototype.slice.call(arguments, 0);
                     var str = args.join(" ");
                     console.log(str);
                 }
