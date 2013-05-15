@@ -146,7 +146,13 @@
         },
         log: function() {
             if (window.console) {
-                console.log.apply(console, arguments);
+                if (console.log.apply) {
+                    console.log.apply(console, arguments);
+                } else {
+                    var args = Array.prototype.slice.apply(arguments, 0);
+                    var str = args.join(" ");
+                    console.log(str);
+                }
             }
         }
     };
@@ -671,7 +677,7 @@
     module["__3"]=Flow;
 })(_qc);(function (module) {
     window.Flowjs = {
-        V: "1.2.6",
+        V: "1.2.7",
         Class: module["__1"],
         Flow: module["__3"],
         Step: module["__7"],

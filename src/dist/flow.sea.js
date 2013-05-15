@@ -1,6 +1,6 @@
 define("./index", [ "./util/class", "./flow", "./step", "./condition", "./input" ], function(require, exports, module) {
     window.Flowjs = {
-        V: "1.2.6",
+        V: "1.2.7",
         Class: require("./util/class"),
         Flow: require("./flow"),
         Step: require("./step"),
@@ -546,7 +546,13 @@ define("./util/tool", [], function(require, exports, module) {
         },
         log: function() {
             if (window.console) {
-                console.log.apply(console, arguments);
+                if (console.log.apply) {
+                    console.log.apply(console, arguments);
+                } else {
+                    var args = Array.prototype.slice.apply(arguments, 0);
+                    var str = args.join(" ");
+                    console.log(str);
+                }
             }
         }
     };
