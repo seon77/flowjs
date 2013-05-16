@@ -204,7 +204,12 @@ define(function(require,exports,module){
             },
             __enter:function(step,data,callback){
                 var _this = this;
-                step.enter(data,function(err,result){
+                var enterData = {};
+                extend(enterData,data);
+                step.enter(enterData,function(err,result){
+                    for(var key in enterData){
+                        delete enterData[key];
+                    }
                     step.__result = result;
                     callback.call(_this,result);
                 });

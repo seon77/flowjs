@@ -1,6 +1,6 @@
 define(function(require,exports,module){
     window.Flowjs = {
-        V:'1.2.8',
+        V:'1.2.9',
         Class:require('./util/class'),
         Flow:require('./flow'),
         Step:require('./step'),
