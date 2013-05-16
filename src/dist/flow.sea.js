@@ -1,6 +1,6 @@
 define("./index", [ "./util/class", "./flow", "./step", "./condition", "./input" ], function(require, exports, module) {
     window.Flowjs = {
-        V: "1.2.8",
+        V: "1.2.9",
         Class: require("./util/class"),
         Flow: require("./flow"),
         Step: require("./step"),
@@ -272,7 +272,12 @@ define("./flow", [ "./util/class", "./util/eventPlugin", "./util/extend", "./beg
             },
             __enter: function(step, data, callback) {
                 var _this = this;
-                step.enter(data, function(err, result) {
+                var enterData = {};
+                extend(enterData, data);
+                step.enter(enterData, function(err, result) {
+                    for (var key in enterData) {
+                        delete enterData[key];
+                    }
                     step.__result = result;
                     callback.call(_this, result);
                 });

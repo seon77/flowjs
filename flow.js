@@ -668,7 +668,12 @@
             },
             __enter: function(step, data, callback) {
                 var _this = this;
-                step.enter(data, function(err, result) {
+                var enterData = {};
+                extend(enterData, data);
+                step.enter(enterData, function(err, result) {
+                    for (var key in enterData) {
+                        delete enterData[key];
+                    }
                     step.__result = result;
                     callback.call(_this, result);
                 });
@@ -678,7 +683,7 @@
     module["__3"]=Flow;
 })(_qc);(function (module) {
     window.Flowjs = {
-        V: "1.2.8",
+        V: "1.2.9",
         Class: module["__1"],
         Flow: module["__3"],
         Step: module["__7"],
