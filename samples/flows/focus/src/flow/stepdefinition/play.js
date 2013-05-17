@@ -12,7 +12,8 @@ define(function(require,exports,module){
                     input:{
                         prev:{type:'number'},
                         curr:{type:'number'},
-                        frames:{type:'object'}
+                        frames:{type:'object'},
+                        dir:{type:'string',empty:true}
                     }
                 };
             }

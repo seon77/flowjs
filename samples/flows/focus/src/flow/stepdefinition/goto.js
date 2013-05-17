@@ -15,7 +15,8 @@ define(function(require,exports,module){
                     },
                     output:{
                         curr:{type:'number'},
-                        prev:{type:'number'}
+                        prev:{type:'number'},
+                        dir:{type:'string'}
                     }
                 };
             }

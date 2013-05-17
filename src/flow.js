@@ -8,6 +8,7 @@ define(function(require,exports,module){
     var Condition = require('./condition');
     var Queue = require('./util/queue');
     var Data = require('./util/flowData');
+    var tool = require('./util/tool');
     var reserve = [];
     var Flow = Class({
         plugins:[new EventPlugin()],
@@ -206,6 +207,11 @@ define(function(require,exports,module){
                 var enterData = {};
                 extend(enterData,data);
                 step.enter(enterData,function(err,result){
+                    if(result == enterData){
+                        var err = 'Can not use enterData as result';
+                        tool.error(err);
+                        throw new Error(err);
+                    }
                     for(var key in enterData){
                         delete enterData[key];
                     }

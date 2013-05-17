@@ -5,6 +5,29 @@ define(function(require,exports,module){
         extend:Step,
         construct:function(options){
             this.callsuper(options);
+        },
+        methods:{
+            _describeData:function(){
+                return {
+                    input:{
+                        wrapper:{
+                            type:'object'
+                        }
+                    },
+                    output:{
+                        frames:{
+                            type:'object'
+                        },
+                        smalls:{
+                            type:'object'
+                        },
+                        cnt:{
+                            type:'object',
+                            empty:true
+                        }
+                    }
+                };
+            }
         }
     });
     

@@ -11,7 +11,8 @@ define(function(require,exports,module){
                 return {
                     input:{
                         frames:{type:'object'},
-                        smalls:{type:'object'}
+                        smalls:{type:'object'},
+                        wrapper:{type:'object'}
                     }
                 };
             }

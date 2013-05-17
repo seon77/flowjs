@@ -5,6 +5,7 @@ define(function(require, exports, module) {
         extend:Flow,
         construct:function(options){
             this.callsuper(options);
+            this._addStep('获取焦点图容器',require('./stepdefinition/getWrapper'));
             this._addStep('获取焦点图数据',require('./stepdefinition/getData'));
             this._addStep('获取焦点图模板',require('./stepdefinition/getTemplate'));
             this._addStep('渲染焦点图',require('./stepdefinition/render'));
@@ -15,13 +16,16 @@ define(function(require, exports, module) {
             this._addStep('延迟',require('./stepdefinition/delay'));
             this._addStep('播放到指定的帧数',require('./stepdefinition/goto'));
             this._addStep('计算下一帧的帧数',require('./stepdefinition/next'));
+            this._addStep('计算上一帧的帧数',require('./stepdefinition/prev'));
             this._addStep('切换焦点图标题',require('./stepdefinition/changeTitle'));
             this._addStep('绑定用户切换事件',require('./stepdefinition/bindEvent'));
+            this._wrapper = options.wrapper;
         },
         methods:{
             //初始化流程
             start:function(){
                 var _this = this;
+                this._go('获取焦点图容器',{wrapper:this._wrapper});
                 this._go('获取焦点图数据');
                 this._go('获取焦点图模板');
                 this._go('渲染焦点图');
@@ -37,6 +41,13 @@ define(function(require, exports, module) {
                         },
                         'mouseoutfocus':function(){
                             _this._go('延迟');
+                        },
+                        'prev':function(){
+                            _this._go('计算上一帧的帧数');
+                            _this._go('切换焦点图');
+                        },
+                        'next':function(){
+                            _this._go('计算下一帧的帧数');
                         }
                     }
                 });
@@ -50,9 +61,6 @@ define(function(require, exports, module) {
                 this._addInterface('goto',function(n){
                     this._go('播放到指定的帧数',{goto:n});
                     this._go('切换焦点图');
-                });
-                this._addInterface('curr',function(n){
-                    return this._getData('curr').curr;
                 });
             }
         }

@@ -11,7 +11,8 @@ define(function(require,exports,module){
                 return {
                     input:{
                         cnt:{
-                            type:'object'
+                            type:'object',
+                            empty:true
                         },
                         data:{
                             type:'object'

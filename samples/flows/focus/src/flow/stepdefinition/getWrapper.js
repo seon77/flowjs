@@ -1,7 +1,7 @@
 define(function(require,exports,module){
     var Class = Flowjs.Class;
     var Step = Flowjs.Step;
-    var ChangeTitle = Class({
+    module.exports = Class({
         extend:Step,
         construct:function(options){
             this.callsuper(options);
@@ -23,6 +23,4 @@ define(function(require,exports,module){
             }
         }
     });
-    
-    module.exports = ChangeTitle;
 });

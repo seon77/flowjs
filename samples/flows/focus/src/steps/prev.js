@@ -4,11 +4,12 @@ define(function(require,exports,module){
             _process:function(data,callback){
                 var total = data.frames.length;
                 var prev = data.curr;
-                var curr = data.curr + 1;
-                if(curr > total){
-                    curr = 1;
+                var curr = data.curr - 1;
+                if(curr < 1){
+                    curr = total;
                 }
-                callback(null,{curr:curr,prev:prev,dir:'next'});
+                console.log(curr);
+                callback(null,{curr:curr,prev:prev,dir:'prev'});
             }
         }
     };
