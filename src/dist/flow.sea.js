@@ -240,7 +240,6 @@ define("./flow", [ "./util/class", "./util/eventPlugin", "./util/extend", "./beg
             __getNext: function(step) {
                 var result = step.__result, next = null;
                 var item = this.__queue.dequeue();
-                var next = null;
                 if (item) {
                     var data = this.__getStepData(item.step);
                     extend(data, item.data);
@@ -440,7 +439,7 @@ define("./step", [ "./util/class", "./util/eventPlugin", "./util/checkData", "./
                 return this.__end;
             },
             data: function(data) {
-                if (arguments.length == 0) {
+                if (arguments.length === 0) {
                     return this._data;
                 } else {
                     extend(this._data, data);
@@ -482,20 +481,30 @@ define("./util/checkData", [ "./tool" ], function(require, exports, module) {
             for (var key in struct) {
                 var item = struct[key];
                 if (struct[key].empty !== true && self.isEmpty(struct[key], data[key])) {
-                    throw new Error("字段[" + key + "]值为空");
+                    var err = "字段[" + key + "]值为空";
+                    tool.error(err);
+                    throw new Error(err);
                 } else if (struct[key].empty === true && self.isEmpty(struct[key], data[key])) {
                     continue;
                 } else if (struct[key].type == "number" && typeof data[key] != "number") {
-                    throw new Error("字段[" + key + "]不是数字");
+                    var err = "字段[" + key + "]不是数字";
+                    tool.error(err);
+                    throw new Error(err);
                 } else if (struct[key].type == "string" && typeof data[key] != "string") {
-                    throw new Error("字段[" + key + "]不是字符串");
+                    var err = "字段[" + key + "]不是字符串";
+                    tool.error(err);
+                    throw new Error(err);
                 } else if (struct[key].type == "array") {
                     if (!self.checkArray(struct[key], data[key])) {
-                        throw new Error("字段[" + key + "]值与定义不符");
+                        var err = "字段[" + key + "]值与定义不符";
+                        tool.error(err);
+                        throw new Error(err);
                     }
                 } else if (struct[key].type == "object") {
                     if (!self.checkObject(struct[key].struct, data[key])) {
-                        throw new Error("字段[" + key + "]值与定义不符");
+                        var err = "字段[" + key + "]值与定义不符";
+                        tool.error(err);
+                        throw new Error(err);
                     }
                 }
             }
@@ -525,7 +534,7 @@ define("./util/checkData", [ "./tool" ], function(require, exports, module) {
             if (rule.type == "object") {
                 return data === null;
             } else if (rule.type == "array") {
-                return data.length == 0;
+                return data.length === 0;
             } else {
                 return data === "" || data === undefined || data === null;
             }
@@ -561,6 +570,17 @@ define("./util/tool", [], function(require, exports, module) {
                     console.log(str);
                 }
             }
+        },
+        error: function() {
+            if (window.console) {
+                if (console.error.apply) {
+                    console.error.apply(console, arguments);
+                } else {
+                    var args = Array.prototype.slice.call(arguments, 0);
+                    var str = args.join(" ");
+                    console.error(str);
+                }
+            }
         }
     };
 });;
@@ -568,7 +588,7 @@ define("./input", [ "./util/class", "./condition", "./util/extend" ], function(r
     var Class = require("./util/class");
     var Condition = require("./condition");
     var extend = require("./util/extend");
-    var Condition = Class({
+    var Input = Class({
         extend: Condition,
         construct: function(options) {
             options = options || {};
@@ -590,7 +610,7 @@ define("./input", [ "./util/class", "./condition", "./util/extend" ], function(r
             }
         }
     });
-    module.exports = Condition;
+    module.exports = Input;
 });;
 define("./condition", [ "./util/class", "./step", "./util/extend" ], function(require, exports, module) {
     var Class = require("./util/class");
@@ -641,7 +661,7 @@ define("./util/queue", [ "./class" ], function(require, exports, module) {
             },
             dequeue: function() {
                 var _this = this;
-                if (this._queue.length == 0) {
+                if (this._queue.length === 0) {
                     this.end();
                     return null;
                 } else {
@@ -649,7 +669,7 @@ define("./util/queue", [ "./class" ], function(require, exports, module) {
                 }
             },
             isEmpty: function() {
-                return this._queue.length == 0;
+                return this._queue.length === 0;
             },
             end: function(data) {
                 this.fire("end", data);

@@ -20,27 +20,28 @@ define("./util/class", [ "./baseobject" ], function(require, exports, module) {
         var methods = data.methods || {};
         var statics = data.statics || {};
         var proto = new superproto;
-        for (var key in proto) {
+        var key;
+        for (key in proto) {
             if (proto.hasOwnProperty(key)) {
                 delete proto[key];
             }
         }
-        for (var key in properties) {
+        for (key in properties) {
             proto[key] = properties[key];
         }
-        for (var key in methods) {
+        for (key in methods) {
             proto[key] = methods[key];
         }
         for (var i = 0; i < plugins.length; i++) {
             var plugin = plugins[i];
-            for (var key in plugin) {
+            for (key in plugin) {
                 proto[key] = plugin[key];
             }
         }
         proto.constructor = constructor;
         proto.superclass = superclass;
         constructor.prototype = proto;
-        for (var key in statics) {
+        for (key in statics) {
             constructor[key] = statics[key];
         }
         return constructor;
@@ -52,20 +53,20 @@ define("./util/class", [ "./baseobject" ], function(require, exports, module) {
 });;
 define("./util/baseobject", [], function(require, exports, module) {
     var _Object = function() {};
-    var proto = new Object;
+    var proto = {};
     proto.superclass = Object;
     proto.callsuper = function(methodName) {
-        var _this = this;
+        var _this = this, args;
         if (!this._realsuper) {
             this._realsuper = this.superclass;
         } else {
             this._realsuper = this._realsuper.prototype.superclass;
         }
         if (typeof methodName == "string") {
-            var args = Array.prototype.slice.call(arguments, 1);
+            args = Array.prototype.slice.call(arguments, 1);
             _this._realsuper.prototype[methodName].apply(_this, args);
         } else {
-            var args = Array.prototype.slice.call(arguments, 0);
+            args = Array.prototype.slice.call(arguments, 0);
             _this._realsuper.apply(_this, args);
         }
         this._realsuper = null;
@@ -239,7 +240,6 @@ define("./flow", [ "./util/class", "./util/eventPlugin", "./util/extend", "./beg
             __getNext: function(step) {
                 var result = step.__result, next = null;
                 var item = this.__queue.dequeue();
-                var next = null;
                 if (item) {
                     var data = this.__getStepData(item.step);
                     extend(data, item.data);
@@ -312,7 +312,7 @@ define("./util/eventPlugin", [ "./class" ], function(require, exports, module) {
                     if (listeners) {
                         var len = listeners.length, isRemoveAll = !listener;
                         if (listeners && listeners.length > 0) {
-                            if (isRemoveAll == true) {
+                            if (isRemoveAll === true) {
                                 this._ep_lists[type] = [];
                             } else {
                                 listeners.forEach(function(obj, index) {
@@ -439,7 +439,7 @@ define("./step", [ "./util/class", "./util/eventPlugin", "./util/checkData", "./
                 return this.__end;
             },
             data: function(data) {
-                if (arguments.length == 0) {
+                if (arguments.length === 0) {
                     return this._data;
                 } else {
                     extend(this._data, data);
@@ -481,20 +481,30 @@ define("./util/checkData", [ "./tool" ], function(require, exports, module) {
             for (var key in struct) {
                 var item = struct[key];
                 if (struct[key].empty !== true && self.isEmpty(struct[key], data[key])) {
-                    throw new Error("字段[" + key + "]值为空");
+                    var err = "字段[" + key + "]值为空";
+                    tool.error(err);
+                    throw new Error(err);
                 } else if (struct[key].empty === true && self.isEmpty(struct[key], data[key])) {
                     continue;
                 } else if (struct[key].type == "number" && typeof data[key] != "number") {
-                    throw new Error("字段[" + key + "]不是数字");
+                    var err = "字段[" + key + "]不是数字";
+                    tool.error(err);
+                    throw new Error(err);
                 } else if (struct[key].type == "string" && typeof data[key] != "string") {
-                    throw new Error("字段[" + key + "]不是字符串");
+                    var err = "字段[" + key + "]不是字符串";
+                    tool.error(err);
+                    throw new Error(err);
                 } else if (struct[key].type == "array") {
                     if (!self.checkArray(struct[key], data[key])) {
-                        throw new Error("字段[" + key + "]值与定义不符");
+                        var err = "字段[" + key + "]值与定义不符";
+                        tool.error(err);
+                        throw new Error(err);
                     }
                 } else if (struct[key].type == "object") {
                     if (!self.checkObject(struct[key].struct, data[key])) {
-                        throw new Error("字段[" + key + "]值与定义不符");
+                        var err = "字段[" + key + "]值与定义不符";
+                        tool.error(err);
+                        throw new Error(err);
                     }
                 }
             }
@@ -524,7 +534,7 @@ define("./util/checkData", [ "./tool" ], function(require, exports, module) {
             if (rule.type == "object") {
                 return data === null;
             } else if (rule.type == "array") {
-                return data.length == 0;
+                return data.length === 0;
             } else {
                 return data === "" || data === undefined || data === null;
             }
@@ -560,6 +570,17 @@ define("./util/tool", [], function(require, exports, module) {
                     console.log(str);
                 }
             }
+        },
+        error: function() {
+            if (window.console) {
+                if (console.error.apply) {
+                    console.error.apply(console, arguments);
+                } else {
+                    var args = Array.prototype.slice.call(arguments, 0);
+                    var str = args.join(" ");
+                    console.error(str);
+                }
+            }
         }
     };
 });;
@@ -567,7 +588,7 @@ define("./input", [ "./util/class", "./condition", "./util/extend" ], function(r
     var Class = require("./util/class");
     var Condition = require("./condition");
     var extend = require("./util/extend");
-    var Condition = Class({
+    var Input = Class({
         extend: Condition,
         construct: function(options) {
             options = options || {};
@@ -589,7 +610,7 @@ define("./input", [ "./util/class", "./condition", "./util/extend" ], function(r
             }
         }
     });
-    module.exports = Condition;
+    module.exports = Input;
 });;
 define("./condition", [ "./util/class", "./step", "./util/extend" ], function(require, exports, module) {
     var Class = require("./util/class");
@@ -640,7 +661,7 @@ define("./util/queue", [ "./class" ], function(require, exports, module) {
             },
             dequeue: function() {
                 var _this = this;
-                if (this._queue.length == 0) {
+                if (this._queue.length === 0) {
                     this.end();
                     return null;
                 } else {
@@ -648,7 +669,7 @@ define("./util/queue", [ "./class" ], function(require, exports, module) {
                 }
             },
             isEmpty: function() {
-                return this._queue.length == 0;
+                return this._queue.length === 0;
             },
             end: function(data) {
                 this.fire("end", data);

@@ -155,6 +155,17 @@
                     console.log(str);
                 }
             }
+        },
+        error: function() {
+            if (window.console) {
+                if (console.error.apply) {
+                    console.error.apply(console, arguments);
+                } else {
+                    var args = Array.prototype.slice.call(arguments, 0);
+                    var str = args.join(" ");
+                    console.error(str);
+                }
+            }
         }
     };
 })(_qc);(function (module) {
@@ -169,20 +180,30 @@
             for (var key in struct) {
                 var item = struct[key];
                 if (struct[key].empty !== true && self.isEmpty(struct[key], data[key])) {
-                    throw new Error("字段[" + key + "]值为空");
+                    var err = "字段[" + key + "]值为空";
+                    tool.error(err);
+                    throw new Error(err);
                 } else if (struct[key].empty === true && self.isEmpty(struct[key], data[key])) {
                     continue;
                 } else if (struct[key].type == "number" && typeof data[key] != "number") {
-                    throw new Error("字段[" + key + "]不是数字");
+                    var err = "字段[" + key + "]不是数字";
+                    tool.error(err);
+                    throw new Error(err);
                 } else if (struct[key].type == "string" && typeof data[key] != "string") {
-                    throw new Error("字段[" + key + "]不是字符串");
+                    var err = "字段[" + key + "]不是字符串";
+                    tool.error(err);
+                    throw new Error(err);
                 } else if (struct[key].type == "array") {
                     if (!self.checkArray(struct[key], data[key])) {
-                        throw new Error("字段[" + key + "]值与定义不符");
+                        var err = "字段[" + key + "]值与定义不符";
+                        tool.error(err);
+                        throw new Error(err);
                     }
                 } else if (struct[key].type == "object") {
                     if (!self.checkObject(struct[key].struct, data[key])) {
-                        throw new Error("字段[" + key + "]值与定义不符");
+                        var err = "字段[" + key + "]值与定义不符";
+                        tool.error(err);
+                        throw new Error(err);
                     }
                 }
             }
