@@ -170,7 +170,6 @@ define(function(require,exports,module){
             __getNext:function(step){
                 var result = step.__result,next = null;
                 var item = this.__queue.dequeue();
-                var next = null;
                 if(item){
                     var data = this.__getStepData(item.step);
                     extend(data,item.data);

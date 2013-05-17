@@ -16,7 +16,7 @@ define(function(require,exports,module){
             },
             dequeue:function(){
                 var _this = this;
-                if(this._queue.length == 0){
+                if(this._queue.length === 0){
                     this.end();
                     return null;
                 }
@@ -25,7 +25,7 @@ define(function(require,exports,module){
                 }
             },
             isEmpty:function(){
-                return this._queue.length == 0;
+                return this._queue.length === 0;
             },
             end:function(data){
                 this.fire('end',data);

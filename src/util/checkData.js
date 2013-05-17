@@ -11,25 +11,35 @@ define(function (require, exports, module) {
                 var item = struct[key];
                 //空值检测
                 if(struct[key].empty !== true && self.isEmpty(struct[key], data[key])){
-                    throw new Error('字段[' + key + ']值为空');
+                    var err = '字段[' + key + ']值为空';
+                    tool.error(err);
+                    throw new Error(err);
                 }
                 else if (struct[key].empty === true && self.isEmpty(struct[key], data[key])) {
                     continue;
                 }
                 else if (struct[key].type == 'number' && typeof data[key] != 'number') {
-                    throw new Error('字段[' + key + ']不是数字');
+                    var err = '字段[' + key + ']不是数字';
+                    tool.error(err);
+                    throw new Error(err);
                 }
                 else if (struct[key].type == 'string' && typeof data[key] != 'string') {
-                    throw new Error('字段[' + key + ']不是字符串');
+                    var err = '字段[' + key + ']不是字符串';
+                    tool.error(err);
+                    throw new Error(err);
                 }
                 else if (struct[key].type == 'array') {
                     if (!self.checkArray(struct[key], data[key])) {
-                        throw new Error('字段[' + key + ']值与定义不符');
+                        var err = '字段[' + key + ']值与定义不符';
+                        tool.error(err);
+                        throw new Error(err);
                     }
                 }
                 else if (struct[key].type == 'object') {
                     if (!self.checkObject(struct[key].struct, data[key])) {
-                        throw new Error('字段[' + key + ']值与定义不符');
+                        var err = '字段[' + key + ']值与定义不符';
+                        tool.error(err);
+                        throw new Error(err);
                     }
                 }
             }
@@ -61,7 +71,7 @@ define(function (require, exports, module) {
                 return data === null;
             }
             else if (rule.type == 'array') {
-                return data.length == 0;
+                return data.length === 0;
             }
             else {
                 return (data === '' || data === undefined || data === null);
@@ -85,5 +95,5 @@ define(function (require, exports, module) {
             }
             return false;
         }
-    }
+    };
 });

@@ -2,7 +2,7 @@ define(function(require,exports,module){
     var Class = require('./util/class');
     var Condition = require('./condition');
     var extend = require('./util/extend');
-    var Condition = Class({
+    var Input = Class({
         extend:Condition,
         construct:function(options){
             options = options || {};
@@ -25,7 +25,6 @@ define(function(require,exports,module){
             }
         }
     });
-    
-    module.exports = Condition;
+
+    module.exports = Input;
 });
-;

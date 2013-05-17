@@ -12,20 +12,21 @@ define(function(require,exports,module){
         var methods = data.methods || {};
         var statics = data.statics || {};
         var proto = new superproto();
-        for(var key in proto){
+        var key;
+        for(key in proto){
             if(proto.hasOwnProperty(key)){
                 delete proto[key];
             }
         }
-        for(var key in properties){
+        for(key in properties){
             proto[key] = properties[key];
         }
-        for(var key in methods){
+        for(key in methods){
             proto[key] = methods[key];
         }
         for(var i = 0; i < plugins.length; i++){
             var plugin = plugins[i];
-            for(var key in plugin){
+            for(key in plugin){
                 proto[key] = plugin[key];
             }
         }
@@ -33,15 +34,15 @@ define(function(require,exports,module){
         proto.superclass = superclass;
         // proto.__NAME__ = name;
         constructor.prototype = proto;
-        for(var key in statics){
+        for(key in statics){
             constructor[key] = statics[key];
         }
         return constructor;
-    }
+    };
 
     Class.abstractMethod = function(){
         throw new Error('Not implement.');
-    }
-    
+    };
+
     module.exports = Class;
 });

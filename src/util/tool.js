@@ -21,6 +21,18 @@ define(function (require, exports, module) {
                     console.log(str);
                 }
             }
+        },
+        error:function(){
+            if(window.console){
+                if(console.error.apply){
+                    console.error.apply(console,arguments);
+                }
+                else{
+                    var args = Array.prototype.slice.call(arguments,0);
+                    var str = args.join(' ');
+                    console.error(str);
+                }
+            }
         }
     }
 });

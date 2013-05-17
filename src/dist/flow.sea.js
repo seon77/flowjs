@@ -20,27 +20,28 @@ define("./util/class", [ "./baseobject" ], function(require, exports, module) {
         var methods = data.methods || {};
         var statics = data.statics || {};
         var proto = new superproto;
-        for (var key in proto) {
+        var key;
+        for (key in proto) {
             if (proto.hasOwnProperty(key)) {
                 delete proto[key];
             }
         }
-        for (var key in properties) {
+        for (key in properties) {
             proto[key] = properties[key];
         }
-        for (var key in methods) {
+        for (key in methods) {
             proto[key] = methods[key];
         }
         for (var i = 0; i < plugins.length; i++) {
             var plugin = plugins[i];
-            for (var key in plugin) {
+            for (key in plugin) {
                 proto[key] = plugin[key];
             }
         }
         proto.constructor = constructor;
         proto.superclass = superclass;
         constructor.prototype = proto;
-        for (var key in statics) {
+        for (key in statics) {
             constructor[key] = statics[key];
         }
         return constructor;
@@ -52,20 +53,20 @@ define("./util/class", [ "./baseobject" ], function(require, exports, module) {
 });;
 define("./util/baseobject", [], function(require, exports, module) {
     var _Object = function() {};
-    var proto = new Object;
+    var proto = {};
     proto.superclass = Object;
     proto.callsuper = function(methodName) {
-        var _this = this;
+        var _this = this, args;
         if (!this._realsuper) {
             this._realsuper = this.superclass;
         } else {
             this._realsuper = this._realsuper.prototype.superclass;
         }
         if (typeof methodName == "string") {
-            var args = Array.prototype.slice.call(arguments, 1);
+            args = Array.prototype.slice.call(arguments, 1);
             _this._realsuper.prototype[methodName].apply(_this, args);
         } else {
-            var args = Array.prototype.slice.call(arguments, 0);
+            args = Array.prototype.slice.call(arguments, 0);
             _this._realsuper.apply(_this, args);
         }
         this._realsuper = null;
@@ -312,7 +313,7 @@ define("./util/eventPlugin", [ "./class" ], function(require, exports, module) {
                     if (listeners) {
                         var len = listeners.length, isRemoveAll = !listener;
                         if (listeners && listeners.length > 0) {
-                            if (isRemoveAll == true) {
+                            if (isRemoveAll === true) {
                                 this._ep_lists[type] = [];
                             } else {
                                 listeners.forEach(function(obj, index) {

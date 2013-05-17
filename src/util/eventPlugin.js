@@ -28,7 +28,7 @@ define(function(require,exports,module){
                         var len = listeners.length,
                             isRemoveAll = !listener;
                         if(listeners && listeners.length > 0){
-                            if(isRemoveAll == true){
+                            if(isRemoveAll === true){
                                 this._ep_lists[type] = [];
                             }
                             else{

@@ -66,7 +66,7 @@ define(function(require,exports,module){
                 return this.__end;
             },
             data:function(data){
-                if(arguments.length == 0){
+                if(arguments.length === 0){
                     return this._data;
                 }
                 else{
@@ -96,6 +96,6 @@ define(function(require,exports,module){
             }
         }
     });
-    
+
     module.exports = Step;
 });
